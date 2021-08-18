@@ -125,7 +125,7 @@ function handleNotifications(event) {
     for (let i = 0; i < value.byteLength; i++) {
         str += String.fromCharCode(value.getUint8(i));
     }
-    console.log('[RECV]: 'str);
+    console.log('[RECV]: ' + str);
 }
 
 function nusSendString(s) {
