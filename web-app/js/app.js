@@ -43,10 +43,10 @@ function connect() {
     navigator.bluetooth.requestDevice({
         //filters: [{services: []}]
         optionalServices: [bleNusServiceUUID],
-        acceptAllDevices: true
+        acceptAllDevices: false
     })
     .then(device => {
-        bleDevice = device; 
+        bleDevice = device;
         console.log('Found ' + device.name);
         console.log('Connecting to GATT Server...');
         bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
@@ -123,7 +123,7 @@ function onDisconnected() {
 function handleNotifications(event) {
     console.log('notification');
     let value = event.target.value;
-    // Convert raw data bytes to character values and use these to 
+    // Convert raw data bytes to character values and use these to
     // construct a string.
     let str = "";
     for (let i = 0; i < value.byteLength; i++) {
