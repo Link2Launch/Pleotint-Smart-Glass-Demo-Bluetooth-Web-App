@@ -3,6 +3,12 @@
   display: inline-block;
   width: 90px;
   height: 34px;
+  
+  user-select: none;
+}
+
+.switch:focus {
+  outline: 0;
 }
 
 .switch input {display:none;}
