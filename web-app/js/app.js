@@ -25,7 +25,7 @@ function connectionToggle() {
 // Sets button to either Connect or Disconnect
 function setConnButtonState(enabled) {
     if (enabled) {
-        document.getElementById("clientConnectButton").innerHTML = "Disconnect";
+        document.getElementById("clientConnectButton").innerHTML = "Disconnect from<br>" + bleDevice.name;
     } else {
         document.getElementById("clientConnectButton").innerHTML = "Connect";
     }
