@@ -19,7 +19,6 @@ function connectionToggle() {
     } else {
         connect();
     }
-    document.getElementById('terminal').focus();
 }
 
 // Sets button to either Connect or Disconnect
@@ -27,7 +26,7 @@ function setConnButtonState(enabled) {
     if (enabled) {
         document.getElementById("clientConnectButton").innerHTML = "Disconnect from<br>" + bleDevice.name;
     } else {
-        document.getElementById("clientConnectButton").innerHTML = "Connect";
+        document.getElementById("clientConnectButton").innerHTML = "Connect to heater";
     }
 }
 
