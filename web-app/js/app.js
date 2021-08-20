@@ -34,6 +34,8 @@ function connect() {
   if (!navigator.bluetooth) {
     console.log('WebBluetooth API is not available.\r\n' +
     'Please make sure the Web Bluetooth flag is enabled.');
+    alert("Web Bluetooth API is not supported on this device...\n" +
+          "Please use an Android, OSX, or Windows device running Chrome or Edge.")
     return;
   }
   console.log('Requesting Bluetooth Device...');
