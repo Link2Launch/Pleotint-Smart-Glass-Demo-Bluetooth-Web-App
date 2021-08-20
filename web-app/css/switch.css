@@ -23,7 +23,7 @@
   background-color: #ca2222;
   -webkit-transition: .4s;
   transition: .4s;
-   border-radius: 34px;
+  border-radius: 34px;
 }
 
 .slider:before {

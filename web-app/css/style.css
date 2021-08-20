@@ -17,48 +17,94 @@ body {
 }
 
 #connection-panel {
-  position: absolute;
+  position: relative;
   background: transparent;
   z-index: 100;
+  width: fit-content;
+  height: 0;
+  margin: auto;
 }
 
 #clientConnectButton {
-  background-color: rgb(51,105,232);
+  position: relative;
+  background-color: #ffec03;
+  color: #292929;
   border: none;
-  border-radius: 8px;
-  width: 160px;
+  border-radius: 6px;
   height: 100%;
   min-height: 50px;
-  color: white;
   text-align: center;
   text-decoration: none;
   font-size: 16px;
   padding-top: 10px;
   padding-bottom: 10px;
-  margin-left: 35px;
   margin-top: 15px;
   cursor: pointer;
 }
 
 #app-container {
-  position: absolute;
+  position: relative;
   height: 100%;
-  width: 100%;
-  
+  width: fit-content;
   top: 0;
   left: 0;
-  
   z-index: 1;
+  margin: auto;
+}
+
+.switch-container {
+  padding-top: 90px;
+  width: 100%;
+  margin-bottom: 40px;
 }
 
 #on-off-switch {
-  margin-top: 100px;
-  margin-left: 69px;
-  
+  position: absolute;
+  left: 50%;
+  margin: auto;
+  transform: translateX(-50%);
 }
 
 #temp-knob {
   display: block;
   margin-top: 10px;
-  margin-left: 15px;
+}
+
+.temp-info {
+  width: 100%;
+  height: 75px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 25% 50% 25%;
+  grid-template-areas:
+    "st-p at-p"
+    "st-d at-d"
+    "status-p status-p"
+    "status-data status-data";
+  justify-items: center;
+  color:  white;
+}
+
+#st-p {
+  grid-area: st-p;
+}
+
+#at-p {
+  grid-area: at-p;
+}
+
+#st-data {
+  grid-area: st-d;
+}
+
+#at-data {
+  grid-area: at-d;
+}
+
+#status-p {
+  grid-area: status-p;
+}
+
+#status-data {
+  grid-area: status-data;
 }

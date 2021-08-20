@@ -1,42 +1,64 @@
-<!DOCTYPE html>
 <html>
-		<head>
-				<meta charset='utf-8'>
-				<title>Web Device CLI</title>
-				<meta name="viewport" content="width=device-width, initial-scale=1">
-				<meta name="description" content="A Web Command Line Interface via NUS (Nordic UART Service) using Web Bluetooth">
-				<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-				<!--[if lt IE 9]>
-				<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-				<![endif]-->
-
-				<link rel="shortcut icon" href="web-app/img/favicon.png">
-
-				<link href="web-app/css/style.css" rel="stylesheet" type='text/css'>
-				<link href="web-app/css/switch.css" rel="stylesheet" type='text/css'>
-				
-				<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-        <script src="web-app/js/jquery.knob.min.js"></script>
-				<script src="web-app/js/knob-script.js"></script>
-		</head>
-		<body>
-			<div id="connection-panel">
-				<button id="clientConnectButton" type="button"
-				class="btn btn-default" onclick="connectionToggle()">Connect to heater</button>
-			</div>
-				
-			<div id="app-container">
-				<label id="on-off-switch" class="switch">
-					<input type="checkbox" id="togBtn">
-					<div class="slider round"></div>
-				</label>
-				
-				<div id="temp-knob">
-					<input class="knob" data-width="200" data-min="70" data-displayPrevious=true value="80">
-				</div>
-			</div>
-			
-		</body>
+<head>
+	<meta charset='utf-8'>
+	<title>Web Device CLI</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="A Web Command Line Interface via NUS (Nordic UART Service) using Web Bluetooth">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
+	<link rel="shortcut icon" href="web-app/img/favicon.png">
+	
+	<link href="web-app/css/style.css" rel="stylesheet" type='text/css'>
+	<link href="web-app/css/switch.css" rel="stylesheet" type='text/css'>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script src="web-app/js/jquery.knob.min.js"></script>
+	<script src="web-app/js/knob-script.js"></script>
+</head>
+<body>
+	<div id="connection-panel">
+		<button id="clientConnectButton" type="button"
+		class="btn btn-default" onclick="connectionToggle()"><strong>Connect to heater</strong></button>
+	</div>
+	
+	<div id="app-container">
+		<div class="switch-container">
+			<label id="on-off-switch" class="switch">
+				<input type="checkbox" id="togBtn">
+				<div class="slider round"></div>
+			</label>
+		</div>
 		
-		<script src='web-app/js/app.js'></script>
+		<div id="temp-knob">
+			<input
+				class="knob"
+				data-skin="tron"
+				data-fgColor="#ffec03"
+				data-width="250"
+				data-height="250"
+			 	data-min="50"
+			 	data-angleOffset=-140
+			 	data-angleArc=280
+			 	data-displayPrevious=true
+			 	value="50"
+			 	data-thickness=.2
+				data-linecap=round>
+		</div>
+		
+		<div class="temp-info">
+			<p id="st-p">Set Temp</p>
+			<p id="at-p">Actual Temp</p>
+			<h1 id="st-data"><span>--</span>°ᶠ</h1>
+			<h1 id="at-data"><span>--</span>°ᶠ</h1>
+			<p id="status-p">Status</p>
+			<h2 id="status-data"><span>Not connected</span></h2>
+		</div>
+	</div>
+	
+</body>
+
+<script src='web-app/js/app.js'></script>
 </html>
