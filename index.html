@@ -24,37 +24,39 @@
 		class="btn btn-default" onclick="connectionToggle()">Connect to heater</button>
 	</div>
 	
-	<div id="app-container">
-		<div class="switch-container">
-			<label id="on-off-switch" class="switch">
-				<input type="checkbox" id="togBtn">
-				<div class="slider round"></div>
-			</label>
-		</div>
-		
-		<div id="temp-knob">
-			<input
+	<div id="full-page-app">
+		<div id="centered-app-container">
+			<div class="switch-container">
+				<label id="on-off-switch" class="switch">
+					<input type="checkbox" id="togBtn">
+					<div class="slider round"></div>
+				</label>
+			</div>
+			
+			<div id="temp-knob">
+				<input
 				class="knob"
 				data-skin="tron"
 				data-fgColor="#ffec03"
 				data-width="250"
 				data-height="250"
-			 	data-min="50"
-			 	data-angleOffset=-140
-			 	data-angleArc=280
-			 	data-displayPrevious=true
-			 	value="50"
-			 	data-thickness=.2
+				data-min="50"
+				data-angleOffset=-140
+				data-angleArc=280
+				data-displayPrevious=true
+				value="50"
+				data-thickness=.2
 				data-linecap=round>
-		</div>
-		
-		<div class="temp-info">
-			<p id="st-p">Set Temp</p>
-			<p id="at-p">Actual Temp</p>
-			<h1 id="st-data"><span>--</span>°ᶠ</h1>
-			<h1 id="at-data"><span>--</span>°ᶠ</h1>
-			<p id="status-p">Status</p>
-			<h2 id="status-data"><span>Not connected</span></h2>
+			</div>
+			
+			<div class="temp-info">
+				<p id="st-p">Set Temp</p>
+				<p id="at-p">Actual Temp</p>
+				<h1 id="st-data"><span>--</span>°ᶠ</h1>
+				<h1 id="at-data"><span>--</span>°ᶠ</h1>
+				<p id="status-p">Status</p>
+				<h2 id="status-data"><span>Not connected</span></h2>
+			</div>
 		</div>
 	</div>
 	

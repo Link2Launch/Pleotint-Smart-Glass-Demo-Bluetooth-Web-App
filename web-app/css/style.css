@@ -13,7 +13,6 @@ body {
   
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 80%;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 #connection-panel {
@@ -21,7 +20,6 @@ body {
   background: transparent;
   z-index: 100;
   width: fit-content;
-  height: 0;
   margin: auto;
 }
 
@@ -32,18 +30,25 @@ body {
   font-weight: bold;
   border: none;
   border-radius: 6px;
-  height: 100%;
   min-height: 40px;
   text-align: center;
   text-decoration: none;
   font-size: 16px;
   padding-top: 10px;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   margin-top: 15px;
   cursor: pointer;
 }
 
-#app-container {
+#full-page-app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#centered-app-container {
   position: relative;
   height: 100%;
   width: fit-content;
