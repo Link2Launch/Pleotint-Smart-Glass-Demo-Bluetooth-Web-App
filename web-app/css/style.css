@@ -29,6 +29,7 @@ body {
   position: relative;
   background-color: #ffec03;
   color: #292929;
+  font-weight: bold;
   border: none;
   border-radius: 6px;
   height: 100%;
