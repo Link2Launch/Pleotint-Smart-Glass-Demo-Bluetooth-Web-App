@@ -22,10 +22,10 @@ function connectionToggle() {
 // Sets button to either Connect or Disconnect
 function setConnButtonState(enabled) {
   if (enabled) {
-    $("#clientConnectButton").innerHTML = "Disconnect from<br>" + bleDevice.name;
+    $("#clientConnectButton").html("Disconnect from<br>" + bleDevice.name);
     $('#function-disabled').toggleClass('functions--enabled', true);
   } else {
-    $("#clientConnectButton").innerHTML = "Connect to heater";
+    $("#clientConnectButton").html("Connect to heater");
     $('#function-disabled').toggleClass('functions--enabled', false);
   }
 }
@@ -46,6 +46,7 @@ function connect() {
     bleDevice = device;
     console.log('Found ' + device.name);
     console.log('Connecting to GATT Server...');
+    $("#clientConnectButton").html("Connecting...");
     bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
     return device.gatt.connect();
   })
