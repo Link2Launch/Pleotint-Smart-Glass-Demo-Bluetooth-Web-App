@@ -49,6 +49,21 @@ body {
   overflow: auto;
 }
 
+#function-disabled {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #847b7be0;
+  z-index: 2;
+  
+  transition: all 0.5s;
+}
+
+.functions--enabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
 #centered-app-container {
   position: relative;
   height: 100%;

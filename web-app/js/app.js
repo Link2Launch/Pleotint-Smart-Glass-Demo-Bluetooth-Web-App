@@ -22,9 +22,11 @@ function connectionToggle() {
 // Sets button to either Connect or Disconnect
 function setConnButtonState(enabled) {
   if (enabled) {
-    document.getElementById("clientConnectButton").innerHTML = "Disconnect from<br>" + bleDevice.name;
+    $("#clientConnectButton").innerHTML = "Disconnect from<br>" + bleDevice.name;
+    $('#function-disabled').toggleClass('functions--enabled', true);
   } else {
-    document.getElementById("clientConnectButton").innerHTML = "Connect to heater";
+    $("#clientConnectButton").innerHTML = "Connect to heater";
+    $('#function-disabled').toggleClass('functions--enabled', false);
   }
 }
 
