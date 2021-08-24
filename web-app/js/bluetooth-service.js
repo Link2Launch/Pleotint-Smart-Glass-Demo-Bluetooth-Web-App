@@ -27,7 +27,7 @@ function setConnButtonState(enabled) {
   } else {
     $("#clientConnectButton").html("Connect to heater");
     $('#function-disabled').toggleClass('functions--enabled', false);
-    $('#status-data span').text(STATUS_VAL[2]);
+    setStatusText(2);
   }
 }
 
@@ -86,7 +86,7 @@ function connect() {
     handleNotifications);
     connected = true;
     console.log(bleDevice.name + ' Connected.');
-    nusSendString('New device connected.');
+    onNewConnection();
     setConnButtonState(true);
   })
   .catch(error => {

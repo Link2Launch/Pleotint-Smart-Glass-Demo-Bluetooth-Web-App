@@ -5,8 +5,10 @@ $(function($) {
     },
     release : function (value) {
       //console.log(this.$.attr('value'));
-      console.log("release : " + value);
+      console.log("[KNOB RELEASE] : " + value);
       $('#st-data span').text(value);
+      
+      onKnobValChange(value);
     },
     cancel : function () {
       console.log("cancel : ", this);
