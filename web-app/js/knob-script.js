@@ -6,7 +6,7 @@ $(function($) {
     release : function (value) {
       //console.log(this.$.attr('value'));
       console.log("release : " + value);
-      $('#st-data span').html(value);
+      $('#st-data span').text(value);
     },
     cancel : function () {
       console.log("cancel : ", this);
