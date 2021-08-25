@@ -15,10 +15,74 @@ body {
   font-size: 80%;
 }
 
+#splash-screen {
+  position: absolute;
+  top:0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  z-index: 100;
+  animation-name: splash-screen-leave;
+  animation-duration: 5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+#splash-screen h1, #splash-screen h2 {
+  position: relative;
+  
+  width: 50%;
+  text-align: center;
+  
+  margin: auto;
+}
+
+#splash-screen .logo {
+  position: relative;
+  
+  width: 50%;
+  height: 50%;
+  
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
+  margin: auto;
+}
+
+#L2L-logo {
+  background-image: url('../img/L2L_vector_logo-01.svg');
+}
+
+#Pleotint-logo {
+  background-image: url('../img/pleotint-logo-jenison-mi-983.jpg');
+}
+
+@keyframes splash-screen-leave {
+  from {
+    top: 0;
+    left: 0;
+    opacity: 1;
+  }
+  
+  90% {
+    top: 0;
+    left: 0;
+    opacity: 1;
+  }
+  
+  to {
+    top: -200;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 #connection-panel {
   position: relative;
   background: transparent;
-  z-index: 100;
+  z-index: 5;
   width: fit-content;
   margin: auto;
 }
