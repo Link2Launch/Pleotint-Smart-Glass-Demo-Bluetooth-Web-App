@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta charset='utf-8'>
-	<title>Web Device CLI</title>
+	<title>Smart Glass Demo Bluetooth App</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="A Web Command Line Interface via NUS (Nordic UART Service) using Web Bluetooth">
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -24,14 +24,19 @@
 		<h1>Smart Glass Demo Bluetooth App</h1>
 		<br><br>
 		<h2>Developed By</h2>
-		<div id="L2L-logo" class="logo"></div>
+		<a href="https://link2launch.com/" target="_blank">
+			<div id="L2L-logo" class="logo"></div>
+		</a>
 		<h2>in partnership with</h2>
-		<div id="Pleotint-logo" class="logo"></div>
+		<a href="https://suntuitiveglass.com/" target="_blank">
+			<div id="Pleotint-logo" class="logo"></div>
+		</a>
 	</div>
 	
 	<div id="connection-panel">
 		<button id="clientConnectButton" type="button"
 		class="btn btn-default" onclick="connectionToggle()">Connect to heater</button>
+		<div id="info-button"><div>i</div></div>
 	</div>
 	
 	<div id="full-page-app">

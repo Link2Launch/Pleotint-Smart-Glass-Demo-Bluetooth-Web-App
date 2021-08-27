@@ -27,6 +27,36 @@ body {
   animation-duration: 5s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
+  
+  transition: all 1s;
+}
+
+@keyframes splash-screen-leave {
+  from {
+    top: 0;
+    left: 0;
+    opacity: 1;
+  }
+  
+  90% {
+    top: 0;
+    left: 0;
+    opacity: 1;
+  }
+  
+  to {
+    top: -200;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.splash-screen--show {
+  animation-name: none !important;
+  pointer-events: all;
+  opacity: 1;
+  top: 0;
 }
 
 #splash-screen h1, #splash-screen h2 {
@@ -58,27 +88,6 @@ body {
   background-image: url('../img/pleotint-logo-jenison-mi-983.jpg');
 }
 
-@keyframes splash-screen-leave {
-  from {
-    top: 0;
-    left: 0;
-    opacity: 1;
-  }
-  
-  90% {
-    top: 0;
-    left: 0;
-    opacity: 1;
-  }
-  
-  to {
-    top: -200;
-    left: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
 #connection-panel {
   position: relative;
   background: transparent;
@@ -102,6 +111,36 @@ body {
   padding-bottom: 10px;
   margin-top: 15px;
   cursor: pointer;
+}
+
+#info-button {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border-top: 80px solid white;
+  border-left: 85px solid transparent;
+}
+
+#info-button:hover {
+  cursor: pointer;
+}
+
+#info-button div {
+  position: absolute;
+  right: 11px;
+  bottom: 41px;
+  height: 25px;
+  width: 25px;
+  border-radius: 100px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: black;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: transparent;
+  text-align: center;
+  margin: auto;
+  line-height: 25px;
 }
 
 #full-page-app {
