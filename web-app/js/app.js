@@ -67,3 +67,11 @@ function sendUartMessage(msg) {
 function setStatusText(index) {
   $('#status-data span').text(STATUS_VAL[index]);
 }
+
+$('#info-button').click(function() {
+  $('#splash-screen').toggleClass('splash-screen--show', true);
+});
+
+$('#splash-screen').click(function() {
+  $('#splash-screen').toggleClass('splash-screen--show', false);
+});
