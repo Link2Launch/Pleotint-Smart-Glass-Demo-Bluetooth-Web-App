@@ -1,7 +1,7 @@
 // codes for recieving messages
 const STATUS_CODE = 's';
-const TEMP1_VALUE  = 't';
-const TEMP2_VALUE = 'k';
+const TEMPA_VALUE  = 't';
+const TEMPB_VALUE = 'k';
 
 // string values for status codes
 const STATUS_VAL = [
@@ -17,8 +17,8 @@ const STATUS_VAL = [
 ];
 
 //codes for sending messages
-const CHANGE_TEMP1 = 'c';
-const CHANGE_TEMP2 = 'd';
+const CHANGE_TEMPA = 'c';
+const CHANGE_TEMPB = 'd';
 const HEATER_PWR  = 'p';
 
 // heater power states
@@ -35,9 +35,9 @@ $('#togBtn').change(function() {
 
 function onKnobValChange(heater, val) {
   if (heater == 1) {
-    sendUartMessage(CHANGE_TEMP1 + ' ' + val);
+    sendUartMessage(CHANGE_TEMPA + ' ' + val);
   } else if (heater == 2){
-    sendUartMessage(CHANGE_TEMP2 + ' ' + val);
+    sendUartMessage(CHANGE_TEMPB + ' ' + val);
   }
 }
 
@@ -67,9 +67,9 @@ function parseUartMessage(msg) {
       $('#togBtn2').prop('checked', true);
     }
     
-  } else if (msgParts[0] == TEMP1_VALUE) {
+  } else if (msgParts[0] == TEMPA_VALUE) {
     $('#at1-data span').text(msgParts[1]); // set the actual temp to the message data
-  } else if (msgParts[0] == TEMP2_VALUE) {
+  } else if (msgParts[0] == TEMPB_VALUE) {
     $('#at2-data span').text(msgParts[1]); // set the actual temp to the message data
   }
 }

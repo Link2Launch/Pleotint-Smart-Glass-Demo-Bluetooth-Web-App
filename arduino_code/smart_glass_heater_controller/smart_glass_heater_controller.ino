@@ -282,17 +282,17 @@ void parseMessage(char* msg) {
         Serial.println("CONNECTED");
         sendStatusMessage(STATUS_CONNECTED);
 
-        if (heater1IsOn) {
-          sendStatusMessage(STATUS_H1_ON);
-        } else {
-          sendStatusMessage(STATUS_H1_OFF);
-        }
-
-        if (heater2IsOn) {
-          sendStatusMessage(STATUS_H2_ON);
-        } else {
-          sendStatusMessage(STATUS_H2_OFF);
-        }
+//        if (heater1IsOn) {
+//          sendStatusMessage(STATUS_H1_ON);
+//        } else {
+//          sendStatusMessage(STATUS_H1_OFF);
+//        }
+//
+//        if (heater2IsOn) {
+//          sendStatusMessage(STATUS_H2_ON);
+//        } else {
+//          sendStatusMessage(STATUS_H2_OFF);
+//        }
 
         break;
       default:
