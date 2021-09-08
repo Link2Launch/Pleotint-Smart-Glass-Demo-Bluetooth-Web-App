@@ -57,10 +57,14 @@ function parseUartMessage(msg) {
   if (msgParts[0] == STATUS_CODE) {
     $('#status-data span').text(STATUS_VAL[msgParts[1]]); // set the status text area to the data
     
-    if (msgParts[1] == '0') {
-      $('#togBtn').prop('checked', false);
-    } else if (msgParts[1] == '1') {
-      $('#togBtn').prop('checked', true);
+    if (msgParts[1] == '2') {
+      $('#togBtn1').prop('checked', false);
+    } else if (msgParts[1] == '3') {
+      $('#togBtn1').prop('checked', true);
+    } else if (msgParts[1] == '4') {
+      $('#togBtn2').prop('checked', true);
+    } else if (msgParts[1] == '5') {
+      $('#togBtn2').prop('checked', true);
     }
     
   } else if (msgParts[0] == TEMP1_VALUE) {

@@ -110,13 +110,16 @@ long timeSinceLastBroadcast;
 
 int probe1Temp;
 int probe2Temp;
-int setTemp = 75;
+int setTemp1 = 75;
+int setTemp2 = 75;
 const int heatActvThresh = 5; // Heater activation threshold (in degrees F)
 
 const int maxTemp = 120; // absolute maximum temperature the heater will ever go
 
-bool heaterSwitchIsOn = false;
-bool heaterIsOn = false;
+bool heater1SwitchIsOn = false;
+bool heater2SwitchIsOn = false;
+bool heater1IsOn = false;
+bool heater2IsOn = false;
 
 // codes for sending messsages
 const char STATUS_CODE = 's';
@@ -135,8 +138,10 @@ const char STATUS_DISCONNECTED = '7'; // status message, bluetooth disconnected
 const char STATUS_CONNECTED = '8'; // status message, bluetooth connected
 
 // codes for recieving messages
-const char CHANGE_TEMP  = 'c';
-const char HEATER_PWR   = 'p';
+const char CHANGE_TEMP1  = 'c';
+const char CHANGE_TEMP2  = 'd';
+const char HEATER_PWR1   = 'p';
+const char HEATER_PWR2   = 'q';
 
 // codes for recieving power states
 const char HEATER_ON  = '1';
@@ -277,10 +282,16 @@ void parseMessage(char* msg) {
         Serial.println("CONNECTED");
         sendStatusMessage(STATUS_CONNECTED);
 
-        if (heaterIsOn) {
-          sendStatusMessage(STATUS_ON);
+        if (heater1IsOn) {
+          sendStatusMessage(STATUS_H1_ON);
         } else {
-          sendStatusMessage(STATUS_OFF);
+          sendStatusMessage(STATUS_H1_OFF);
+        }
+
+        if (heater2IsOn) {
+          sendStatusMessage(STATUS_H2_ON);
+        } else {
+          sendStatusMessage(STATUS_H2_OFF);
         }
 
         break;
@@ -288,18 +299,29 @@ void parseMessage(char* msg) {
         Serial.println("[UNKNOWN CODE]");
         break;
     }
-  } else if (msg[0] == HEATER_PWR) {
-    Serial.print("[HEATER SWITCH]: ");
+  } else if (msg[0] == HEATER_PWR1) {
+    Serial.print("[HEATER SWITCH 1]: ");
     if (msg[2] == HEATER_ON) {
       Serial.println("ON");
-      heaterSwitchIsOn = true;
+      heater1SwitchIsOn = true;
     } else if (msg[2] == HEATER_OFF) {
       Serial.println("OFF");
-      heaterSwitchIsOn = false;
+      heater1SwitchIsOn = false;
     } else {
       Serial.println("UNKNOWN VALUE");
     }
-  } else if (msg[0] == CHANGE_TEMP) {
+  } else if (msg[0] == HEATER_PWR2) {
+    Serial.print("[HEATER SWITCH 2]: ");
+    if (msg[2] == HEATER_ON) {
+      Serial.println("ON");
+      heater2SwitchIsOn = true;
+    } else if (msg[2] == HEATER_OFF) {
+      Serial.println("OFF");
+      heater2SwitchIsOn = false;
+    } else {
+      Serial.println("UNKNOWN VALUE");
+    }
+  } else if (msg[0] == CHANGE_TEMP1 || msg[0] == CHANGE_TEMP2) {
     int numLen = strlen(msg) - 2;
 
     char subText[numLen + 1];
@@ -308,10 +330,17 @@ void parseMessage(char* msg) {
 
     int parsedVal = atoi(subText);
 
-    Serial.print("[CHANGING SET TEMP TO]: ");
-    Serial.println(parsedVal);
+    if (msg[0] == CHANGE_TEMP1) {
+      Serial.print("[CHANGING SET TEMP 1 TO]: ");
+      Serial.println(parsedVal);
 
-    setTemp = parsedVal;
+      setTemp1 = parsedVal;
+    } else if (msg[0] == CHANGE_TEMP2) {
+      Serial.print("[CHANGING SET TEMP 2 TO]: ");
+      Serial.println(parsedVal);
+
+      setTemp2 = parsedVal;
+    }
   }
 }
 
@@ -419,37 +448,42 @@ float pollThermistor(uint8_t thermPin) {
 }
 
 void updateHeaterStatus() {
-  if (heaterSwitchIsOn) {
-    if (probe1Temp < setTemp + heatActvThresh) {
+  if (heater1SwitchIsOn) {
+    if (probe1Temp < setTemp1 + heatActvThresh) {
       if (turnOnHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: ON");
         sendStatusMessage(STATUS_H1_ON);
-        heaterIsOn = true;
+        heater1IsOn = true;
       }
-    } else if (probe1Temp > setTemp - heatActvThresh) {
+    } else if (probe1Temp > setTemp1 - heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
         sendStatusMessage(STATUS_H1_OFF);
-        heaterIsOn = false;
+        heater1IsOn = false;
       }
     }
+  }
 
-    if (probe2Temp < setTemp + heatActvThresh) {
+  if (heater2SwitchIsOn) {
+    if (probe2Temp < setTemp2 + heatActvThresh) {
       if (turnOnHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: ON");
         sendStatusMessage(STATUS_H2_ON);
-        heaterIsOn = true;
+        heater2IsOn = true;
       }
-    } else if (probe2Temp > setTemp - heatActvThresh) {
+    } else if (probe2Temp > setTemp2 - heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
         sendStatusMessage(STATUS_H2_OFF);
-        heaterIsOn = false;
+        heater2IsOn = false;
       }
     }
-  } else {
-    heaterIsOn = false;
-    
+  }
+  
+  if (!heater2SwitchIsOn && !heater2SwitchIsOn) {
+    heater1IsOn = false;
+    heater2IsOn = false;
+
     if (turnOffHeater(HEATER1RELAY)) {
       Serial.println("[HEATER 1 POWER]: OFF");
       sendStatusMessage(STATUS_H1_OFF);
@@ -485,7 +519,7 @@ bool turnOffHeater(uint8_t heater) {
 int digitalReadOutputPin(uint8_t pin) {
   uint8_t bit = digitalPinToBitMask(pin);
   uint8_t port = digitalPinToPort(pin);
-  if (port == NOT_A_PIN) 
+  if (port == NOT_A_PIN)
     return LOW;
 
   return (*portOutputRegister(port) & bit) ? HIGH : LOW;
