@@ -231,19 +231,35 @@ body {
   color: white;
 }
 
-#st-p {
+#st1-p {
   grid-area: st-p;
 }
 
-#at-p {
+#at1-p {
   grid-area: at-p;
 }
 
-#st-data {
+#st1-data {
   grid-area: st-d;
 }
 
-#at-data {
+#at1-data {
+  grid-area: at-d;
+}
+
+#st2-p {
+  grid-area: st-p;
+}
+
+#at2-p {
+  grid-area: at-p;
+}
+
+#st2-data {
+  grid-area: st-d;
+}
+
+#at2-data {
   grid-area: at-d;
 }
 

@@ -8,7 +8,11 @@ $(function($) {
       console.log("[KNOB RELEASE] : " + value);
       $('#st-data span').text(value);
       
-      onKnobValChange(value);
+      if (this.id == 'heater-1-knob') {
+        onKnobValChange(1, value);
+      } else if (this.id == 'heater-2-knob') {
+        onKnobValChange(2, value);
+      }
     },
     cancel : function () {
       console.log("cancel : ", this);
