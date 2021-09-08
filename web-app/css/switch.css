@@ -1,5 +1,9 @@
 .switch {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  margin: auto;
+  transform: translateX(-50%);
+  
   display: inline-block;
   width: 110px;
   height: 34px;

@@ -41,9 +41,11 @@
 	
 	<div id="full-page-app">
 		<div id="function-disabled"></div>
-		<div id="centered-app-container">
+		
+		<div id="app-container-left" class="app-container">
+			<h2>Thigh Heater</h2>
 			<div class="switch-container">
-				<label id="on-off-switch" class="switch">
+				<label id="heater-1-switch" class="switch">
 					<input type="checkbox" id="togBtn">
 					<div class="slider round"></div>
 				</label>
@@ -51,11 +53,12 @@
 			
 			<div id="temp-knob">
 				<input
+				id="heater-1-knob"
 				class="knob"
 				data-skin="tron"
 				data-fgColor="#ffec03"
-				data-width="250"
-				data-height="250"
+				data-width="180"
+				data-height="180"
 				data-min="50"
 				data-angleOffset=-140
 				data-angleArc=280
@@ -70,9 +73,46 @@
 				<p id="at-p">Actual Temp</p>
 				<h1 id="st-data"><span>--</span>°ᶠ</h1>
 				<h1 id="at-data"><span>--</span>°ᶠ</h1>
-				<p id="status-p">Status</p>
-				<h2 id="status-data"><span>Not connected</span></h2>
 			</div>
+		</div>
+		
+		<div id="app-container-right"  class="app-container">
+			<h2>Feet Heater</h2>
+			<div class="switch-container">
+				<label id="heater-2-switch" class="switch">
+					<input type="checkbox" id="togBtn">
+					<div class="slider round"></div>
+				</label>
+			</div>
+			
+			<div id="temp-knob">
+				<input
+				id="heater-2-knob"
+				class="knob"
+				data-skin="tron"
+				data-fgColor="#ffec03"
+				data-width="180"
+				data-height="180"
+				data-min="50"
+				data-angleOffset=-140
+				data-angleArc=280
+				data-displayPrevious=true
+				value="75"
+				data-thickness=.2
+				data-linecap=round>
+			</div>
+			
+			<div class="temp-info">
+				<p id="st-p">Set Temp</p>
+				<p id="at-p">Actual Temp</p>
+				<h1 id="st-data"><span>--</span>°ᶠ</h1>
+				<h1 id="at-data"><span>--</span>°ᶠ</h1>
+			</div>
+		</div>
+		
+		<div id="status-info-area">
+			<p id="status-p">Status</p>
+			<h2 id="status-data"><span>Not connected</span></h2>
 		</div>
 	</div>
 	

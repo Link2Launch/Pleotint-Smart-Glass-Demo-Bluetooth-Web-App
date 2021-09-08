@@ -150,16 +150,22 @@ body {
   height: 100%;
   width: 100%;
   overflow: auto;
+  
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas:
+    "app-left app-right"
+    "status-info-area status-info-area";
 }
 
 #function-disabled {
   position: absolute;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   background-color: #847b7be0;
   z-index: 2;
-  
   transition: all 1s;
+  overflow-y: hidden;
 }
 
 .functions--enabled {
@@ -167,7 +173,9 @@ body {
   pointer-events: none;
 }
 
-#centered-app-container {
+
+
+.app-container {
   position: relative;
   height: 100%;
   width: fit-content;
@@ -177,17 +185,30 @@ body {
   margin: auto;
 }
 
-.switch-container {
+.app-container h2 {
   padding-top: 90px;
-  width: 100%;
-  margin-bottom: 40px;
+  text-align: center;
+  color: white;
 }
 
-#on-off-switch {
-  position: absolute;
-  left: 50%;
-  margin: auto;
-  transform: translateX(-50%);
+#app-container-left {
+  grid-area: app-left;
+}
+
+#app-container-right {
+  grid-area: app-right;
+}
+
+#status-info-area {
+  grid-area: status-info-area;
+  justify-items: center;
+  text-align: center;
+  color: white;
+}
+
+.switch-container {
+  width: 100%;
+  margin-bottom: 60px;
 }
 
 #temp-knob {
@@ -207,7 +228,7 @@ body {
     "status-p status-p"
     "status-data status-data";
   justify-items: center;
-  color:  white;
+  color: white;
 }
 
 #st-p {
