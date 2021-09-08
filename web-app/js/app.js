@@ -1,13 +1,19 @@
 // codes for recieving messages
 const STATUS_CODE = 's';
 const TEMP_VALUE  = 't';
+const TEMP2_VALUE = 'k';
 
 // string values for status codes
 const STATUS_VAL = [
   'Connected, heater is off', // 0
   'Connected, heater is on',  // 1
-  'Disconnected',             // 2
-  'Connected'                 // 3
+  'Heater 1 is off',          // 2
+  'Heater 1 is on',           // 3
+  'Heater 2 is off',          // 4
+  'Heater 2 is on',           // 5
+  'Heaters OFF, Maximum safe temp exceeded', // 6
+  'Disconnected',             // 7
+  'Connected'                 // 8
 ];
 
 //codes for sending messages
@@ -31,7 +37,7 @@ function onKnobValChange(val) {
 }
 
 function onNewConnection() {
-  sendUartMessage(STATUS_CODE + ' 3');
+  sendUartMessage(STATUS_CODE + ' 8');
   
   $('#st-data span').text($('.knob').val()); // set our set temp text box value to the knob
   sendUartMessage(CHANGE_TEMP + ' ' + $('.knob').val());

@@ -80,21 +80,59 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 //                             BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
 
 
+/*********************************************/
+// THERMISTOR CODE
+
+// which analog pin to connect
+#define THERMISTOR1PIN A1
+#define THERMISTOR2PIN A2
+// resistance at 25 degrees C
+#define THERMISTORNOMINAL 10000
+// temp. for nominal resistance (almost always 25 C)
+#define TEMPERATURENOMINAL 25
+// how many samples to take and average, more takes longer
+// but is more 'smooth'
+#define NUMSAMPLES 5
+// The beta coefficient of the thermistor (usually 3000-4000)
+#define BCOEFFICIENT 3950
+// the value of the 'other' resistor
+#define SERIESRESISTOR 1000
+
+int samples[NUMSAMPLES];
+
+long timeSinceLastTempPoll;
+
+
+/**********************************************/
+
+
 long timeSinceLastBroadcast;
 
-int currentTemp = 50; // TODO poll the sensor at the beginning to get the current temp
+int probe1Temp;
+int probe2Temp;
 int setTemp = 75;
+const int heatActvThresh = 5; // Heater activation threshold (in degrees F)
+
+const int maxTemp = 120; // absolute maximum temperature the heater will ever go
+
+bool heaterSwitchIsOn = false;
 bool heaterIsOn = false;
 
 // codes for sending messsages
 const char STATUS_CODE = 's';
-const char TEMP_VALUE = 't';
+const char TEMP1_VALUE = 't';
+const char TEMP2_VALUE = 'k';
 
 // status code states
-const char STATUS_OFF = '0';
-const char STATUS_ON  = '1';
-const char STATUS_DISCONNECTED = '2';
-const char STATUS_CONNECTED = '3';
+const char STATUS_OFF = '0'; // status message, bt heater switch off
+const char STATUS_ON  = '1'; // status message, bt heater switch on
+const char STATUS_H1_OFF = '2'; // status message, heater 1 off
+const char STATUS_H1_ON  = '3'; // status message, heater 1 on
+const char STATUS_H2_OFF = '4'; // status message, heater 2 off
+const char STATUS_H2_ON  = '5'; // status message, heater 2 on
+const char STATUS_MAX_TEMP = '6'; // status message, heater reached max temp, turned off for safety
+const char STATUS_DISCONNECTED = '7'; // status message, bluetooth disconnected
+const char STATUS_CONNECTED = '8'; // status message, bluetooth connected
 
 // codes for recieving messages
 const char CHANGE_TEMP  = 'c';
@@ -105,7 +143,9 @@ const char HEATER_ON  = '1';
 const char HEATER_OFF = '0';
 
 
-
+// Relay pins for the heaters
+#define HEATER1RELAY 13
+#define HEATER2RELAY 12
 
 
 // A small helper
@@ -127,8 +167,10 @@ void setup(void) {
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Command Mode Example"));
+  Serial.println(F("Link2Launch - Pleotint Smart Glass Heater"));
   Serial.println(F("---------------------------------------"));
+
+  analogReference(EXTERNAL); // for the thermistor
 
   /* Initialise the module */
   Serial.print(F("Initialising the Bluefruit LE module: "));
@@ -153,24 +195,22 @@ void setup(void) {
   /* Print Bluefruit information */
   ble.info();
 
+  /* Change the device name to make it easier to find */
+  Serial.println(F("Setting device name to 'Pleotint Smart Glass Heater': "));
+
+  if (! ble.sendCommandCheckOK(F("AT+GAPDEVNAME=Pleotint Smart Glass Heater")) ) {
+    error(F("Could not set device name?"));
+  }
+
   ble.verbose(false);  // debug info is a little annoying after this point!
 
-  /* Wait for connection */
-  while (! ble.isConnected()) {
-    delay(500);
-  }
-
-  // LED Activity command is only supported from 0.6.6
-  if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
-    // Change Mode LED Activity
-    Serial.println(F("******************************"));
-    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
-    ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
-    Serial.println(F("******************************"));
-  }
-
   timeSinceLastBroadcast = millis();
-  broadcastCurrTemp();
+
+  timeSinceLastTempPoll = millis();
+  pollThermistors(0);
+
+  pinMode(HEATER1RELAY, OUTPUT);
+  pinMode(HEATER2RELAY, OUTPUT);
 }
 
 
@@ -220,7 +260,7 @@ void sendStatusMessage(char CODE) {
 
 void parseMessage(char* msg) {
   if (msg[0] == STATUS_CODE) {
-    Serial.print("STATUS CODE: ");
+    Serial.print("[STATUS CODE]: ");
 
     switch (msg[2]) {
       case STATUS_OFF:
@@ -242,24 +282,22 @@ void parseMessage(char* msg) {
         } else {
           sendStatusMessage(STATUS_OFF);
         }
-        
+
         break;
       default:
-        Serial.println("UNKNOWN CODE");
+        Serial.println("[UNKNOWN CODE]");
         break;
     }
   } else if (msg[0] == HEATER_PWR) {
-    Serial.print("HEATER POWER: ");
+    Serial.print("[HEATER SWITCH]: ");
     if (msg[2] == HEATER_ON) {
       Serial.println("ON");
-      sendStatusMessage(STATUS_ON);
-      heaterIsOn = true;
+      heaterSwitchIsOn = true;
     } else if (msg[2] == HEATER_OFF) {
       Serial.println("OFF");
-      sendStatusMessage(STATUS_OFF);
-      heaterIsOn = false;
+      heaterSwitchIsOn = false;
     } else {
-      Serial.println("UNKNOWN CODE");
+      Serial.println("UNKNOWN VALUE");
     }
   } else if (msg[0] == CHANGE_TEMP) {
     int numLen = strlen(msg) - 2;
@@ -270,7 +308,7 @@ void parseMessage(char* msg) {
 
     int parsedVal = atoi(subText);
 
-    Serial.print("CHANGING SET TEMP TO: ");
+    Serial.print("[CHANGING SET TEMP TO]: ");
     Serial.println(parsedVal);
 
     setTemp = parsedVal;
@@ -295,8 +333,7 @@ bool getUserInput(char buffer[], uint8_t maxSize) {
 
   delay(2);
   uint8_t count = 0;
-  do
-  {
+  do {
     count += Serial.readBytes(buffer + count, maxSize);
     delay(2);
   } while ( (count < maxSize) && (Serial.available()) );
@@ -312,29 +349,169 @@ void broadcastCurrTemp(long interval) {
 }
 
 void broadcastCurrTemp() {
-  Serial.print("BROADCASTING CURRENT TEMP: ");
-  Serial.println(currentTemp);
-  String msg = String(TEMP_VALUE);
-  msg = msg + " " + currentTemp;
+  Serial.print("[BROADCASTING TEMP PROBE 1]: ");
+  Serial.println(probe1Temp);
+  String msg = String(TEMP1_VALUE);
+  msg = msg + " " + probe1Temp;
   sendBtMessage(msg);
 
+  delay(100);
 
-  // !!!IMPORTANT!!! REMOVE THIS CODE WHEN ACTUALLY POLLING THE SENSOR FOR TEMP
-  // CODE IS HERE FOR DEMO PURPOSES
-  if (heaterIsOn && currentTemp > setTemp) {
-    currentTemp--;
-  } else if (heaterIsOn && currentTemp < setTemp) {
-    currentTemp++;
+  Serial.print("[BROADCASTING TEMP PROBE 2]: ");
+  Serial.println(probe2Temp);
+  msg = String(TEMP2_VALUE);
+  msg = msg + " " + probe2Temp;
+  sendBtMessage(msg);
+}
+
+void pollThermistors(long interval) {
+  if (millis() - timeSinceLastTempPoll > interval) {
+    probe1Temp = pollThermistor(THERMISTOR1PIN);
+    probe2Temp = pollThermistor(THERMISTOR2PIN);
+
+    timeSinceLastTempPoll = millis();
+  }
+}
+
+float pollThermistor(uint8_t thermPin) {
+  uint8_t i;
+  float average;
+
+  // take N samples in a row, with a slight delay
+  for (i = 0; i < NUMSAMPLES; i++) {
+    samples[i] = analogRead(thermPin);
+    delay(10);
+  }
+
+  // average all the samples out
+  average = 0;
+  for (i = 0; i < NUMSAMPLES; i++) {
+    average += samples[i];
+  }
+  average /= NUMSAMPLES;
+
+  //  Serial.print("Average analog reading ");
+  //  Serial.println(average);
+
+  // convert the value to resistance
+  average = 1023 / average - 1;
+  average = SERIESRESISTOR / average;
+  //  Serial.print("Thermistor resistance ");
+  //  Serial.println(average);
+
+  float steinhart;
+  steinhart = average / THERMISTORNOMINAL;     // (R/Ro)
+  steinhart = log(steinhart);                  // ln(R/Ro)
+  steinhart /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
+  steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
+  steinhart = 1.0 / steinhart;                 // Invert
+  steinhart -= 273.15;                         // convert absolute temp to C
+
+  float fahrenheit = (steinhart * 9 / 5) + 32;
+
+  Serial.print("[THERMISTOR ");
+  Serial.print(thermPin);
+  Serial.print(" READING]: ");
+  Serial.print(fahrenheit);
+  Serial.println(" *F");
+
+  return fahrenheit;
+}
+
+void updateHeaterStatus() {
+  if (heaterSwitchIsOn) {
+    if (probe1Temp < setTemp + heatActvThresh) {
+      if (turnOnHeater(HEATER1RELAY)) {
+        Serial.println("[HEATER 1 POWER]: ON");
+        sendStatusMessage(STATUS_H1_ON);
+      }
+    } else if (probe1Temp > setTemp - heatActvThresh) {
+      if (turnOffHeater(HEATER1RELAY)) {
+        Serial.println("[HEATER 1 POWER]: OFF");
+        sendStatusMessage(STATUS_H1_OFF);
+      }
+    }
+
+    if (probe2Temp < setTemp + heatActvThresh) {
+      if (turnOnHeater(HEATER2RELAY)) {
+        Serial.println("[HEATER 2 POWER]: ON");
+        sendStatusMessage(STATUS_H2_ON);
+      }
+    } else if (probe2Temp > setTemp - heatActvThresh) {
+      if (turnOffHeater(HEATER2RELAY)) {
+        Serial.println("[HEATER 2 POWER]: OFF");
+        sendStatusMessage(STATUS_H2_OFF);
+      }
+    }
+  } else {
+    heaterIsOn = false;
+    
+    if (turnOffHeater(HEATER1RELAY)) {
+      Serial.println("[HEATER 1 POWER]: OFF");
+      sendStatusMessage(STATUS_H1_OFF);
+    }
+
+    if (turnOffHeater(HEATER2RELAY)) {
+      Serial.println("[HEATER 2 POWER]: OFF");
+      sendStatusMessage(STATUS_H2_OFF);
+    }
+  }
+
+  // protection against over heating the heater
+  if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
+    turnOffHeater(HEATER1RELAY);
+    turnOffHeater(HEATER2RELAY);
+
+    Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
+    sendStatusMessage(STATUS_MAX_TEMP);
+  }
+}
+
+// RETURNS IF THE STATE CHANGED TO OFF
+bool turnOnHeater(uint8_t heater) {
+  return triggerRelay(true, heater);
+}
+
+// RETURNS IF THE STATE CHANGED TO ON
+bool turnOffHeater(uint8_t heater) {
+  return triggerRelay(false, heater);
+}
+
+// helper method to see if the pin is high or low
+int digitalReadOutputPin(uint8_t pin) {
+  uint8_t bit = digitalPinToBitMask(pin);
+  uint8_t port = digitalPinToPort(pin);
+  if (port == NOT_A_PIN) 
+    return LOW;
+
+  return (*portOutputRegister(port) & bit) ? HIGH : LOW;
+}
+
+// RETURNS IF THE STATE CHANGED
+bool triggerRelay(int state, uint8_t relay) {
+  int currState = digitalReadOutputPin(relay);
+
+  if (currState == state) {
+    return false;
+  } else {
+    digitalWrite(relay, state);
+    return true;
   }
 }
 
 void loop(void) {
-  char* msg = pollBtMessages();
+  pollThermistors(2000);
 
-  // if our message is not null
-  if (strcmp(msg, "") != 0) {
-    parseMessage(msg);
+  if (ble.isConnected()) {
+    char* msg = pollBtMessages();
+
+    // if our message is not null
+    if (strcmp(msg, "") != 0) {
+      parseMessage(msg);
+    }
+
+    broadcastCurrTemp(5000);
   }
 
-  broadcastCurrTemp(5000);
+  updateHeaterStatus();
 }
