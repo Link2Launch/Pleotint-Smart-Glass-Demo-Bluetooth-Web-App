@@ -424,11 +424,13 @@ void updateHeaterStatus() {
       if (turnOnHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: ON");
         sendStatusMessage(STATUS_H1_ON);
+        heaterIsOn = true;
       }
     } else if (probe1Temp > setTemp - heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
         sendStatusMessage(STATUS_H1_OFF);
+        heaterIsOn = false;
       }
     }
 
@@ -436,11 +438,13 @@ void updateHeaterStatus() {
       if (turnOnHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: ON");
         sendStatusMessage(STATUS_H2_ON);
+        heaterIsOn = true;
       }
     } else if (probe2Temp > setTemp - heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
         sendStatusMessage(STATUS_H2_OFF);
+        heaterIsOn = false;
       }
     }
   } else {
@@ -467,12 +471,12 @@ void updateHeaterStatus() {
   }
 }
 
-// RETURNS IF THE STATE CHANGED TO OFF
+// RETURNS TRUE IF THE STATE CHANGED TO OFF
 bool turnOnHeater(uint8_t heater) {
   return triggerRelay(true, heater);
 }
 
-// RETURNS IF THE STATE CHANGED TO ON
+// RETURNS TRUE IF THE STATE CHANGED TO ON
 bool turnOffHeater(uint8_t heater) {
   return triggerRelay(false, heater);
 }
@@ -487,7 +491,7 @@ int digitalReadOutputPin(uint8_t pin) {
   return (*portOutputRegister(port) & bit) ? HIGH : LOW;
 }
 
-// RETURNS IF THE STATE CHANGED
+// RETURNS TRUE IF THE STATE CHANGED
 bool triggerRelay(int state, uint8_t relay) {
   int currState = digitalReadOutputPin(relay);
 
