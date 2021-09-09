@@ -22,14 +22,25 @@ const CHANGE_TEMPB = 'd';
 const HEATER_PWR  = 'p';
 
 // heater power states
-const HEATER_ON   = '1';
-const HEATER_OFF  = '0';
+const HEATERA_OFF  = '0';
+const HEATERA_ON   = '1';
+const HEATERB_OFF  = '2';
+const HEATERB_ON   = '3';
 
-$('#togBtn').change(function() {
+
+$('#togBtn1').change(function() {
   if (this.checked) {
-    sendUartMessage(HEATER_PWR + ' ' + HEATER_ON);
+    sendUartMessage(HEATER_PWR + ' ' + HEATERA_ON);
   } else {
-    sendUartMessage(HEATER_PWR + ' ' + HEATER_OFF);
+    sendUartMessage(HEATER_PWR + ' ' + HEATERA_OFF);
+  }
+});
+
+$('#togBtn2').change(function() {
+  if (this.checked) {
+    sendUartMessage(HEATER_PWR + ' ' + HEATERB_ON);
+  } else {
+    sendUartMessage(HEATER_PWR + ' ' + HEATERB_OFF);
   }
 });
 

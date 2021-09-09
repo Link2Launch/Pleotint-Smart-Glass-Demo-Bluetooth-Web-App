@@ -27,7 +27,7 @@ function setConnButtonState(enabled) {
   } else {
     $("#clientConnectButton").html("Connect to heater");
     $('#function-disabled').toggleClass('functions--enabled', false);
-    setStatusText(2);
+    setStatusText(7);
   }
 }
 
