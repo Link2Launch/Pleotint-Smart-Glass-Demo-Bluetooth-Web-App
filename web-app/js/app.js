@@ -56,10 +56,10 @@ function onNewConnection() {
   sendUartMessage(STATUS_CODE + ' 8');
   
   $('#st-data span').text($('#heater-1-knob').val()); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMP + ' ' + $('#heater-1-knob').val());
+  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val());
   
   $('#st-data span').text($('#heater-2-knob').val()); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMP + ' ' + $('#heater-2-knob').val());
+  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val());
 }
 
 function parseUartMessage(msg) {
