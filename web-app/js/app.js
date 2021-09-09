@@ -19,28 +19,33 @@ const STATUS_VAL = [
 //codes for sending messages
 const CHANGE_TEMPA = 'c';
 const CHANGE_TEMPB = 'd';
-const HEATER_PWR  = 'p';
+const HEATERA_PWR  = 'p';
+const HEATERB_PWR  = 'q';
 
 // heater power states
-const HEATERA_OFF  = '0';
-const HEATERA_ON   = '1';
-const HEATERB_OFF  = '2';
-const HEATERB_ON   = '3';
+const HEATER_OFF  = '0';
+const HEATER_ON   = '1';
 
 
 $('#togBtn1').change(function() {
   if (this.checked) {
-    sendUartMessage(HEATER_PWR + ' ' + HEATERA_ON);
+    sendUartMessage(HEATERA_PWR + ' ' + HEATER_ON);
   } else {
-    sendUartMessage(HEATER_PWR + ' ' + HEATERA_OFF);
+    sendUartMessage(HEATERA_PWR + ' ' + HEATER_OFF);
+    
+    knob1Color = HEATER_DEF_COLOR;
+    $("#heater-1-knob").trigger('change');
   }
 });
 
 $('#togBtn2').change(function() {
   if (this.checked) {
-    sendUartMessage(HEATER_PWR + ' ' + HEATERB_ON);
+    sendUartMessage(HEATERB_PWR + ' ' + HEATER_ON);
   } else {
-    sendUartMessage(HEATER_PWR + ' ' + HEATERB_OFF);
+    sendUartMessage(HEATERB_PWR + ' ' + HEATER_OFF);
+    
+    knob2Color = HEATER_DEF_COLOR;
+    $("#heater-2-knob").trigger('change');
   }
 });
 
@@ -66,17 +71,32 @@ function parseUartMessage(msg) {
   let msgParts = msg.split(' ');
   
   if (msgParts[0] == STATUS_CODE) {
-    $('#status-data span').text(STATUS_VAL[msgParts[1]]); // set the status text area to the data
+    if (msgParts[0] == '4' || msgParts[0] == '5') {
+      $('#status-data span').text(
+        $('#status-data span').text() + ', ' + STATUS_VAL[msgParts[1]]); // set the status text area to the data
+    } else {
+      $('#status-data span').text(STATUS_VAL[msgParts[1]]);
+    }
     
     if (msgParts[1] == '2') {
-      $('#togBtn1').prop('checked', false);
+      knob1Color = HEATER_OFF_COLOR;
     } else if (msgParts[1] == '3') {
-      $('#togBtn1').prop('checked', true);
+      knob1Color = HEATER_ON_COLOR;
     } else if (msgParts[1] == '4') {
-      $('#togBtn2').prop('checked', true);
+      knob2Color = HEATER_OFF_COLOR;
     } else if (msgParts[1] == '5') {
-      $('#togBtn2').prop('checked', true);
+      knob2Color = HEATER_ON_COLOR;
     }
+    
+    if (!$('#togBtn1').is(':checked')) {
+      knob1Color = HEATER_DEF_COLOR;
+    }
+    if (!$('#togBtn2').is(':checked')) {
+      knob2Color = HEATER_DEF_COLOR;
+    }
+    
+    $("#heater-1-knob").trigger('change');
+    $("#heater-2-knob").trigger('change');
     
   } else if (msgParts[0] == TEMPA_VALUE) {
     $('#at1-data span').text(msgParts[1]); // set the actual temp to the message data
