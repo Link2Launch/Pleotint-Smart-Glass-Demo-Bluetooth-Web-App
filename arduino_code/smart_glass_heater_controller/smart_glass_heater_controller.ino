@@ -282,17 +282,17 @@ void parseMessage(char* msg) {
         Serial.println("CONNECTED");
         sendStatusMessage(STATUS_CONNECTED);
 
-//        if (heater1IsOn) {
-//          sendStatusMessage(STATUS_H1_ON);
-//        } else {
-//          sendStatusMessage(STATUS_H1_OFF);
-//        }
-//
-//        if (heater2IsOn) {
-//          sendStatusMessage(STATUS_H2_ON);
-//        } else {
-//          sendStatusMessage(STATUS_H2_OFF);
-//        }
+        if (heater1IsOn) {
+          sendStatusMessage(STATUS_H1_ON);
+        } else {
+          sendStatusMessage(STATUS_H1_OFF);
+        }
+
+        if (heater2IsOn) {
+          sendStatusMessage(STATUS_H2_ON);
+        } else {
+          sendStatusMessage(STATUS_H2_OFF);
+        }
 
         break;
       default:
@@ -480,7 +480,7 @@ void updateHeaterStatus() {
     }
   }
   
-  if (!heater2SwitchIsOn && !heater2SwitchIsOn) {
+  if (!heater1SwitchIsOn && !heater2SwitchIsOn) {
     heater1IsOn = false;
     heater2IsOn = false;
 
@@ -515,19 +515,9 @@ bool turnOffHeater(uint8_t heater) {
   return triggerRelay(false, heater);
 }
 
-// helper method to see if the pin is high or low
-int digitalReadOutputPin(uint8_t pin) {
-  uint8_t bit = digitalPinToBitMask(pin);
-  uint8_t port = digitalPinToPort(pin);
-  if (port == NOT_A_PIN)
-    return LOW;
-
-  return (*portOutputRegister(port) & bit) ? HIGH : LOW;
-}
-
 // RETURNS TRUE IF THE STATE CHANGED
 bool triggerRelay(int state, uint8_t relay) {
-  int currState = digitalReadOutputPin(relay);
+  int currState = digitalRead(relay);
 
   if (currState == state) {
     return false;
