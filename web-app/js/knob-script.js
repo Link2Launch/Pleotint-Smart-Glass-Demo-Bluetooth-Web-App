@@ -7,7 +7,7 @@ $(function($) {
       //console.log(this.$.attr('value'));
       console.log("[KNOB RELEASE] : " + value);
       $('#st-data span').text(value);
-      console.log('KNOB CHANGE: ' + this.id);
+      console.log('KNOB CHANGE: ' + $(this).attr('id'));
       if (this.id == 'heater-1-knob') {
         onKnobValChange(1, value);
       } else if (this.id == 'heater-2-knob') {
