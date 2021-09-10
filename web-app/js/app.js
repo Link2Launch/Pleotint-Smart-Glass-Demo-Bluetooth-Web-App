@@ -14,10 +14,6 @@ const STATUS_VAL = [
   'Heaters OFF, Maximum safe temp exceeded', // 6
   'Disconnected',             // 7
   'Connected'                 // 8
-  'Heater 1 switch off',      // 9
-  'Heater 1 switch on',       // a
-  'Heater 2 switch off',      // b
-  'Heater 2 switch on',       // c
 ];
 
 //codes for sending messages
