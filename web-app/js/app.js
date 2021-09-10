@@ -60,11 +60,11 @@ function onKnobValChange(heater, val) {
 function onNewConnection() {
   sendUartMessage(STATUS_CODE + ' 8', 0);
   
-  $('#st1-data span').text($('#heater-1-knob').val().replace('°ᶠ', "")); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val().replace('°ᶠ', ""), 200);
+  $('#st1-data span').text($('#heater-1-knob').val().replace('°ᶠ', '')); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val().replace('°ᶠ', ''), 200);
   
-  $('#st2-data span').text($('#heater-2-knob').val().replace('°ᶠ', "")); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val().replace('°ᶠ', ""), 400);
+  $('#st2-data span').text($('#heater-2-knob').val().replace('°ᶠ', '')); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val().replace('°ᶠ', ''), 400);
   
   if ($('#togBtn1').is(':checked')) {
     sendUartMessage(HEATERA_SWITCH + ' ' + HEATER_ON, 600);
@@ -84,10 +84,13 @@ function parseUartMessage(msg) {
   
   if (msgParts[0] == STATUS_CODE) {
     if (msgParts[1] == '4' || msgParts[1] == '5') {
-      $('#status-data span').text(
-        $('#status-data span').text() + ', ' + STATUS_VAL[msgParts[1]]); // set the status text area to the data
+      $('#status2-data span').text(STATUS_VAL[msgParts[1]]); // set the status text area to the data
     } else {
       $('#status-data span').text(STATUS_VAL[msgParts[1]]);
+    }
+    
+    if (! (msgParts[1] == '2' || msgParts[1] == '3')) {
+      $('#status2-data span').text(''); // set the status text area to the data
     }
     
     if (msgParts[1] == '2') {
