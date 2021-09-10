@@ -127,15 +127,15 @@ const char TEMP1_VALUE = 't';
 const char TEMP2_VALUE = 'k';
 
 // status code states
-const char STATUS_OFF = '0'; // status message, bt heater switch off
-const char STATUS_ON  = '1'; // status message, bt heater switch on
+const char STATUS_OFF =    '0'; // status message, bt heater switch off
+const char STATUS_ON  =    '1'; // status message, bt heater switch on
 const char STATUS_H1_OFF = '2'; // status message, heater 1 off
 const char STATUS_H1_ON  = '3'; // status message, heater 1 on
 const char STATUS_H2_OFF = '4'; // status message, heater 2 off
 const char STATUS_H2_ON  = '5'; // status message, heater 2 on
-const char STATUS_MAX_TEMP = '6'; // status message, heater reached max temp, turned off for safety
+const char STATUS_MAX_TEMP =     '6'; // status message, heater reached max temp, turned off for safety
 const char STATUS_DISCONNECTED = '7'; // status message, bluetooth disconnected
-const char STATUS_CONNECTED = '8'; // status message, bluetooth connected
+const char STATUS_CONNECTED =    '8'; // status message, bluetooth connected
 
 // codes for recieving messages
 const char CHANGE_TEMP1  = 'c';
@@ -282,17 +282,7 @@ void parseMessage(char* msg) {
         Serial.println("CONNECTED");
         sendStatusMessage(STATUS_CONNECTED);
 
-        if (heater1IsOn) {
-          sendStatusMessage(STATUS_H1_ON);
-        } else {
-          sendStatusMessage(STATUS_H1_OFF);
-        }
-
-        if (heater2IsOn) {
-          sendStatusMessage(STATUS_H2_ON);
-        } else {
-          sendStatusMessage(STATUS_H2_OFF);
-        }
+        broadcastCurrentHeaterState();
 
         break;
       default:
@@ -310,6 +300,8 @@ void parseMessage(char* msg) {
     } else {
       Serial.println("UNKNOWN VALUE");
     }
+
+    broadcastCurrentHeaterState();
   } else if (msg[0] == HEATER_PWR2) {
     Serial.print("[HEATER SWITCH 2]: ");
     if (msg[2] == HEATER_ON) {
@@ -321,6 +313,8 @@ void parseMessage(char* msg) {
     } else {
       Serial.println("UNKNOWN VALUE");
     }
+
+    broadcastCurrentHeaterState();
   } else if (msg[0] == CHANGE_TEMP1 || msg[0] == CHANGE_TEMP2) {
     int numLen = strlen(msg) - 2;
 
@@ -449,13 +443,13 @@ float pollThermistor(uint8_t thermPin) {
 
 void updateHeaterStatus() {
   if (heater1SwitchIsOn) {
-    if (probe1Temp < setTemp1 + heatActvThresh) {
+    if (probe1Temp < setTemp1 - heatActvThresh) {
       if (turnOnHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: ON");
         sendStatusMessage(STATUS_H1_ON);
         heater1IsOn = true;
       }
-    } else if (probe1Temp > setTemp1 - heatActvThresh) {
+    } else if (probe1Temp > setTemp1 + heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
         sendStatusMessage(STATUS_H1_OFF);
@@ -465,13 +459,13 @@ void updateHeaterStatus() {
   }
 
   if (heater2SwitchIsOn) {
-    if (probe2Temp < setTemp2 + heatActvThresh) {
+    if (probe2Temp < setTemp2 - heatActvThresh) {
       if (turnOnHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: ON");
         sendStatusMessage(STATUS_H2_ON);
         heater2IsOn = true;
       }
-    } else if (probe2Temp > setTemp2 - heatActvThresh) {
+    } else if (probe2Temp > setTemp2 + heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
         sendStatusMessage(STATUS_H2_OFF);
@@ -502,6 +496,24 @@ void updateHeaterStatus() {
 
     Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
     sendStatusMessage(STATUS_MAX_TEMP);
+  }
+}
+
+void broadcastCurrentHeaterState() {
+  if (heater1SwitchIsOn) {
+    Serial.println("[Broadcast Heater 1 Switch]: ON");
+    sendStatusMessage(STATUS_H1_ON);
+  } else {
+    Serial.println("[Broadcast Heater 1 Switch]: OFF");
+    sendStatusMessage(STATUS_H1_OFF);
+  }
+
+  if (heater2SwitchIsOn) {
+    Serial.println("[Broadcast Heater 2 Switch]: ON");
+    sendStatusMessage(STATUS_H2_ON);
+  } else {
+    Serial.println("[Broadcast Heater 2 Switch]: OFF");
+    sendStatusMessage(STATUS_H2_OFF);
   }
 }
 

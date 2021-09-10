@@ -14,6 +14,10 @@ const STATUS_VAL = [
   'Heaters OFF, Maximum safe temp exceeded', // 6
   'Disconnected',             // 7
   'Connected'                 // 8
+  'Heater 1 switch off',      // 9
+  'Heater 1 switch on',       // a
+  'Heater 2 switch off',      // b
+  'Heater 2 switch on',       // c
 ];
 
 //codes for sending messages
@@ -65,13 +69,17 @@ function onNewConnection() {
   
   $('#st-data span').text($('#heater-2-knob').val()); // set our set temp text box value to the knob
   sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val());
+  
+  // trigger a state change on the heater switches so they broadcast their current state
+  $('#togBtn1').trigger('change');
+  $('#togBtn2').trigger('change');
 }
 
 function parseUartMessage(msg) {
   let msgParts = msg.split(' ');
   
   if (msgParts[0] == STATUS_CODE) {
-    if (msgParts[0] == '4' || msgParts[0] == '5') {
+    if (msgParts[1] == '4' || msgParts[1] == '5') {
       $('#status-data span').text(
         $('#status-data span').text() + ', ' + STATUS_VAL[msgParts[1]]); // set the status text area to the data
     } else {
