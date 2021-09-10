@@ -89,7 +89,7 @@ function parseUartMessage(msg) {
       $('#status-data span').text(STATUS_VAL[msgParts[1]]);
     }
     
-    if (! (msgParts[1] == '2' || msgParts[1] == '3')) {
+    if (! (msgParts[1] == '2' || msgParts[1] == '3' || msgParts[1] == '4' || msgParts[1] == '5')) {
       $('#status2-data span').text(''); // set the status text area to the data
     }
     
