@@ -1,5 +1,5 @@
 const HEATER_ON_COLOR = 'rgb(255, 0, 0)';
-const HEATER_OFF_COLOR = 'rgb(135, 206, 235)';
+const HEATER_OFF_COLOR = 'rgb(205, 205, 205)';
 const HEATER_DEF_COLOR = 'rgb(255, 236, 3)';
 
 var knob1Color = HEATER_DEF_COLOR;

@@ -260,7 +260,7 @@ void sendStatusMessage(char CODE) {
   msg = msg + " " + CODE;
   sendBtMessage(msg);
 
-  delay(100);
+  delay(200);
 }
 
 void parseMessage(char* msg) {
