@@ -500,19 +500,19 @@ void updateHeaterStatus() {
 }
 
 void broadcastCurrentHeaterState() {
-  if (heater1SwitchIsOn) {
-    Serial.println("[Broadcast Heater 1 Switch]: ON");
+  if (heater1IsOn) {
+    Serial.println("[Broadcast Heater 1 State]: ON");
     sendStatusMessage(STATUS_H1_ON);
   } else {
-    Serial.println("[Broadcast Heater 1 Switch]: OFF");
+    Serial.println("[Broadcast Heater 1 State]: OFF");
     sendStatusMessage(STATUS_H1_OFF);
   }
 
-  if (heater2SwitchIsOn) {
-    Serial.println("[Broadcast Heater 2 Switch]: ON");
+  if (heater2IsOn) {
+    Serial.println("[Broadcast Heater 2 State]: ON");
     sendStatusMessage(STATUS_H2_ON);
   } else {
-    Serial.println("[Broadcast Heater 2 Switch]: OFF");
+    Serial.println("[Broadcast Heater 2 State]: OFF");
     sendStatusMessage(STATUS_H2_OFF);
   }
 }
