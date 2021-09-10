@@ -60,24 +60,15 @@ function onKnobValChange(heater, val) {
 function onNewConnection() {
   sendUartMessage(STATUS_CODE + ' 8');
   
-  setTimeout(function() {
-    $('#st-data span').text($('#heater-1-knob').val()); // set our set temp text box value to the knob
-    sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val());
-    
-    setTimeout(function() {
-      $('#st-data span').text($('#heater-2-knob').val()); // set our set temp text box value to the knob
-      sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val());
-      
-      setTimeout(function() {
-        // trigger a state change on the heater switches so they broadcast their current state
-        $('#togBtn1').trigger('change');
-        
-        setTimeout(function() {
-          $('#togBtn2').trigger('change');
-        }, 100);
-      }, 100);
-    }, 100);
-  }, 100);
+  $('#st-data span').text($('#heater-1-knob').val()); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val());
+  
+  $('#st-data span').text($('#heater-2-knob').val()); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val());
+  
+  // trigger a state change on the heater switches so they broadcast their current state
+  $('#togBtn1').trigger('change');
+  $('#togBtn2').trigger('change');
 }
 
 function parseUartMessage(msg) {
