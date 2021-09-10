@@ -168,9 +168,6 @@ void error(const __FlashStringHelper*err) {
 */
 /**************************************************************************/
 void setup(void) {
-  while (!Serial);  // required for Flora & Micro
-  delay(500);
-
   Serial.begin(115200);
   Serial.println(F("Link2Launch - Pleotint Smart Glass Heater"));
   Serial.println(F("---------------------------------------"));
@@ -226,7 +223,7 @@ void sendBtMessage(String msg) {
   ble.print("AT+BLEUARTTX=");
   ble.println(msg);
 
-  // check response stastus
+  // check response status
   if (! ble.waitForOK() ) {
     Serial.println(F("Failed to send?"));
   }
@@ -338,32 +335,6 @@ void parseMessage(char* msg) {
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief  Checks for user input (via the Serial Monitor)
-*/
-/**************************************************************************/
-bool getUserInput(char buffer[], uint8_t maxSize) {
-  // timeout in 100 milliseconds
-  TimeoutTimer timeout(100);
-
-  memset(buffer, 0, maxSize);
-  while ( (!Serial.available()) && !timeout.expired() ) {
-    delay(1);
-  }
-
-  if ( timeout.expired() ) return false;
-
-  delay(2);
-  uint8_t count = 0;
-  do {
-    count += Serial.readBytes(buffer + count, maxSize);
-    delay(2);
-  } while ( (count < maxSize) && (Serial.available()) );
-
-  return true;
-}
-
 void broadcastCurrTemp(long interval) {
   if (millis() - timeSinceLastBroadcast > interval) {
     broadcastCurrTemp();
@@ -456,6 +427,13 @@ void updateHeaterStatus() {
         heater1IsOn = false;
       }
     }
+  } else {
+    heater1IsOn = false;
+
+    if (turnOffHeater(HEATER1RELAY)) {
+      Serial.println("[HEATER 1 POWER]: OFF");
+      sendStatusMessage(STATUS_H1_OFF);
+    }
   }
 
   if (heater2SwitchIsOn) {
@@ -472,16 +450,8 @@ void updateHeaterStatus() {
         heater2IsOn = false;
       }
     }
-  }
-  
-  if (!heater1SwitchIsOn && !heater2SwitchIsOn) {
-    heater1IsOn = false;
+  } else {
     heater2IsOn = false;
-
-    if (turnOffHeater(HEATER1RELAY)) {
-      Serial.println("[HEATER 1 POWER]: OFF");
-      sendStatusMessage(STATUS_H1_OFF);
-    }
 
     if (turnOffHeater(HEATER2RELAY)) {
       Serial.println("[HEATER 2 POWER]: OFF");
@@ -543,6 +513,7 @@ void loop(void) {
   pollThermistors(2000);
 
   if (ble.isConnected()) {
+    
     char* msg = pollBtMessages();
 
     // if our message is not null

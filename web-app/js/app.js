@@ -128,6 +128,7 @@ function sendUartMessage(msg, delay) {
 
 function setStatusText(index) {
   $('#status-data span').text(STATUS_VAL[index]);
+  $('#status2-data span').text('');
 }
 
 $('#info-button').click(function() {
