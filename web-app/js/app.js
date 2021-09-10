@@ -7,10 +7,10 @@ const TEMPB_VALUE = 'k';
 const STATUS_VAL = [
   'Connected, heater is off', // 0
   'Connected, heater is on',  // 1
-  'Heater 1 is off',          // 2
-  'Heater 1 is on',           // 3
-  'Heater 2 is off',          // 4
-  'Heater 2 is on',           // 5
+  'Thigh heater is currently off',          // 2
+  'Thigh heater is currently on',           // 3
+  'Leg heater is currently off',          // 4
+  'Leg heater is currently on',           // 5
   'Heaters OFF, Maximum safe temp exceeded', // 6
   'Disconnected',             // 7
   'Connected'                 // 8

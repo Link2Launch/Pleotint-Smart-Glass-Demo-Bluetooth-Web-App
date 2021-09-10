@@ -265,6 +265,7 @@ body {
 
 #status-p {
   grid-area: status-p;
+  margin-top: 0;
 }
 
 #status-data {
