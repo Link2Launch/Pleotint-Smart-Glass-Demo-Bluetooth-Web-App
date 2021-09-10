@@ -19,8 +19,8 @@ const STATUS_VAL = [
 //codes for sending messages
 const CHANGE_TEMPA = 'c';
 const CHANGE_TEMPB = 'd';
-const HEATERA_PWR  = 'p';
-const HEATERB_PWR  = 'q';
+const HEATERA_SWITCH  = 'p';
+const HEATERB_SWITCH  = 'q';
 
 // heater power states
 const HEATER_OFF  = '0';
@@ -29,9 +29,9 @@ const HEATER_ON   = '1';
 
 $('#togBtn1').change(function() {
   if (this.checked) {
-    sendUartMessage(HEATERA_PWR + ' ' + HEATER_ON);
+    sendUartMessage(HEATERA_SWITCH + ' ' + HEATER_ON, 0);
   } else {
-    sendUartMessage(HEATERA_PWR + ' ' + HEATER_OFF);
+    sendUartMessage(HEATERA_SWITCH + ' ' + HEATER_OFF, 0);
     
     knob1Color = HEATER_DEF_COLOR;
     $("#heater-1-knob").trigger('change');
@@ -40,9 +40,9 @@ $('#togBtn1').change(function() {
 
 $('#togBtn2').change(function() {
   if (this.checked) {
-    sendUartMessage(HEATERB_PWR + ' ' + HEATER_ON);
+    sendUartMessage(HEATERB_SWITCH + ' ' + HEATER_ON, 0);
   } else {
-    sendUartMessage(HEATERB_PWR + ' ' + HEATER_OFF);
+    sendUartMessage(HEATERB_SWITCH + ' ' + HEATER_OFF, 0);
     
     knob2Color = HEATER_DEF_COLOR;
     $("#heater-2-knob").trigger('change');
@@ -51,24 +51,32 @@ $('#togBtn2').change(function() {
 
 function onKnobValChange(heater, val) {
   if (heater == 1) {
-    sendUartMessage(CHANGE_TEMPA + ' ' + val);
+    sendUartMessage(CHANGE_TEMPA + ' ' + val, 0);
   } else if (heater == 2){
-    sendUartMessage(CHANGE_TEMPB + ' ' + val);
+    sendUartMessage(CHANGE_TEMPB + ' ' + val, 0);
   }
 }
 
 function onNewConnection() {
-  sendUartMessage(STATUS_CODE + ' 8');
+  sendUartMessage(STATUS_CODE + ' 8', 0);
   
-  $('#st-data span').text($('#heater-1-knob').val()); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val());
+  $('#st1-data span').text($('#heater-1-knob').val().replace('°ᶠ', "")); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPA + ' ' + $('#heater-1-knob').val().replace('°ᶠ', ""), 200);
   
-  $('#st-data span').text($('#heater-2-knob').val()); // set our set temp text box value to the knob
-  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val());
+  $('#st2-data span').text($('#heater-2-knob').val().replace('°ᶠ', "")); // set our set temp text box value to the knob
+  sendUartMessage(CHANGE_TEMPB + ' ' + $('#heater-2-knob').val().replace('°ᶠ', ""), 400);
   
-  // trigger a state change on the heater switches so they broadcast their current state
-  $('#togBtn1').trigger('change');
-  $('#togBtn2').trigger('change');
+  if ($('#togBtn1').is(':checked')) {
+    sendUartMessage(HEATERA_SWITCH + ' ' + HEATER_ON, 600);
+  } else {
+    sendUartMessage(HEATERA_SWITCH + ' ' + HEATER_OFF, 600);
+  }
+  
+  if ($('#togBtn2').is(':checked')) {
+    sendUartMessage(HEATERB_SWITCH + ' ' + HEATER_ON, 800);
+  } else {
+    sendUartMessage(HEATERB_SWITCH + ' ' + HEATER_OFF, 800);
+  }
 }
 
 function parseUartMessage(msg) {
@@ -109,8 +117,10 @@ function parseUartMessage(msg) {
   }
 }
 
-function sendUartMessage(msg) {
-  nusSendString(msg);
+function sendUartMessage(msg, delay) {
+  setTimeout(function() {
+    nusSendString(msg);
+  }, delay);
 }
 
 function setStatusText(index) {
