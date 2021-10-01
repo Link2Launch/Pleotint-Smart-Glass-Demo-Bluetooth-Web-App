@@ -152,6 +152,9 @@ const char HEATER_OFF = '0';
 #define HEATER1RELAY 13
 #define HEATER2RELAY 12
 
+#define HEATER1LED 10
+#define HEATER2LED 9
+
 
 // A small helper
 void error(const __FlashStringHelper*err) {
@@ -361,8 +364,8 @@ void broadcastCurrTemp() {
 void pollThermistors(long interval) {
   if (millis() - timeSinceLastTempPoll > interval) {
     probe1Temp = pollThermistor(THERMISTOR1PIN);
-    //probe2Temp = pollThermistor(THERMISTOR2PIN);
-    probe2Temp=80; //just for testing CHANGEMEFORFINAL
+    probe2Temp = pollThermistor(THERMISTOR2PIN);
+
     timeSinceLastTempPoll = millis();
   }
 }
@@ -414,19 +417,21 @@ float pollThermistor(uint8_t thermPin) {
 
 void updateHeaterStatus() {
   if (heater1SwitchIsOn) {
-    if (probe1Temp < setTemp1 - heatActvThresh) {
+    if (probe1Temp < setTemp1 + heatActvThresh) {
       if (turnOnHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: ON");
         sendStatusMessage(STATUS_H1_ON);
         heater1IsOn = true;
       }
-    } else if (probe1Temp > setTemp1 + heatActvThresh) {
+    } else if (probe1Temp > setTemp1 - heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
         sendStatusMessage(STATUS_H1_OFF);
         heater1IsOn = false;
       }
     }
+
+    turnOnLED(HEATER1LED);
   } else {
     heater1IsOn = false;
 
@@ -434,22 +439,26 @@ void updateHeaterStatus() {
       Serial.println("[HEATER 1 POWER]: OFF");
       sendStatusMessage(STATUS_H1_OFF);
     }
+
+    turnOnLED(HEATER2LED);
   }
 
   if (heater2SwitchIsOn) {
-    if (probe2Temp < setTemp2 - heatActvThresh) {
+    if (probe2Temp < setTemp2 + heatActvThresh) {
       if (turnOnHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: ON");
         sendStatusMessage(STATUS_H2_ON);
         heater2IsOn = true;
       }
-    } else if (probe2Temp > setTemp2 + heatActvThresh) {
+    } else if (probe2Temp > setTemp2 - heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
         sendStatusMessage(STATUS_H2_OFF);
         heater2IsOn = false;
       }
     }
+
+    turnOnLED(HEATER2LED);
   } else {
     heater2IsOn = false;
 
@@ -457,6 +466,8 @@ void updateHeaterStatus() {
       Serial.println("[HEATER 2 POWER]: OFF");
       sendStatusMessage(STATUS_H2_OFF);
     }
+
+    turnOffLED(HEATER2LED);
   }
 
   // protection against over heating the heater
@@ -489,16 +500,24 @@ void broadcastCurrentHeaterState() {
 
 // RETURNS TRUE IF THE STATE CHANGED TO OFF
 bool turnOnHeater(uint8_t heater) {
-  return triggerRelay(true, heater);
+  return triggerIO(true, heater);
 }
 
 // RETURNS TRUE IF THE STATE CHANGED TO ON
 bool turnOffHeater(uint8_t heater) {
-  return triggerRelay(false, heater);
+  return triggerIO(false, heater);
+}
+
+bool turnOnLED(uint8_t ledPin) {
+  return triggerIO(true, ledPin);
+}
+
+bool turnOffLED(uint8_t ledPin) {
+  return triggerIO(false, ledPin);
 }
 
 // RETURNS TRUE IF THE STATE CHANGED
-bool triggerRelay(int state, uint8_t relay) {
+bool triggerIO(int state, uint8_t relay) {
   int currState = digitalRead(relay);
 
   if (currState == state) {
