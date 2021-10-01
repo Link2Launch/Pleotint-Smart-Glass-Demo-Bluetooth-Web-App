@@ -5,15 +5,15 @@ const TEMPB_VALUE = 'k';
 
 // string values for status codes
 const STATUS_VAL = [
-  'Connected, heater is off', // 0
-  'Connected, heater is on',  // 1
-  'Thigh heater is currently off',          // 2
-  'Thigh heater is currently on',           // 3
-  'Leg heater is currently off',          // 4
-  'Leg heater is currently on',           // 5
+  'Connected, heater is off',                // 0
+  'Connected, heater is on',                 // 1
+  'Thigh heater is currently off',           // 2
+  'Thigh heater is currently on',            // 3
+  'Leg heater is currently off',             // 4
+  'Leg heater is currently on',              // 5
   'Heaters OFF, Maximum safe temp exceeded', // 6
-  'Disconnected',             // 7
-  'Connected'                 // 8
+  'Disconnected',                            // 7
+  'Connected'                                // 8
 ];
 
 //codes for sending messages
