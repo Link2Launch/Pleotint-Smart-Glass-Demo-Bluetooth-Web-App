@@ -112,7 +112,7 @@ int probe1Temp;
 int probe2Temp;
 int setTemp1 = 75;
 int setTemp2 = 75;
-const int heatActvThresh = 5; // Heater activation threshold (in degrees F)
+const int heatActvThresh = 0; // Heater activation threshold (in degrees F)
 
 const int maxTemp = 120; // absolute maximum temperature the heater will ever go
 
@@ -361,8 +361,8 @@ void broadcastCurrTemp() {
 void pollThermistors(long interval) {
   if (millis() - timeSinceLastTempPoll > interval) {
     probe1Temp = pollThermistor(THERMISTOR1PIN);
-    probe2Temp = pollThermistor(THERMISTOR2PIN);
-
+    //probe2Temp = pollThermistor(THERMISTOR2PIN);
+    probe2Temp=80; //just for testing CHANGEMEFORFINAL
     timeSinceLastTempPoll = millis();
   }
 }
