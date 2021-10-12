@@ -101,6 +101,9 @@ function parseUartMessage(msg) {
       knob2Color = HEATER_OFF_COLOR;
     } else if (msgParts[1] == '5') {
       knob2Color = HEATER_ON_COLOR;
+    } else if (msgParts[1] == '6') {
+      knob1Color = HEATER_OFF_COLOR;
+      knob2Color = HEATER_OFF_COLOR;
     }
     
     if (!$('#togBtn1').is(':checked')) {
