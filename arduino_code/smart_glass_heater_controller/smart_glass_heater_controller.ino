@@ -418,67 +418,71 @@ float pollThermistor(uint8_t thermPin) {
 }
 
 void updateHeaterStatus() {
-  if (heater1SwitchIsOn) {
-    if (probe1Temp < setTemp1 + heatActvThresh) {
-      if (turnOnHeater(HEATER1RELAY)) {
-        Serial.println("[HEATER 1 POWER]: ON");
-        sendStatusMessage(STATUS_H1_ON);
-        heater1IsOn = true;
-      }
-    } else if (probe1Temp > setTemp1 - heatActvThresh) {
-      if (turnOffHeater(HEATER1RELAY)) {
-        Serial.println("[HEATER 1 POWER]: OFF");
-        sendStatusMessage(STATUS_H1_OFF);
-        heater1IsOn = false;
-      }
-    }
-
-    turnOnLED(HEATER1LED);
-  } else {
-    heater1IsOn = false;
-
-    if (turnOffHeater(HEATER1RELAY)) {
-      Serial.println("[HEATER 1 POWER]: OFF");
-      sendStatusMessage(STATUS_H1_OFF);
-    }
-
-    turnOffLED(HEATER1LED);
-  }
-
-  if (heater2SwitchIsOn) {
-    if (probe2Temp < setTemp2 + heatActvThresh) {
-      if (turnOnHeater(HEATER2RELAY)) {
-        Serial.println("[HEATER 2 POWER]: ON");
-        sendStatusMessage(STATUS_H2_ON);
-        heater2IsOn = true;
-      }
-    } else if (probe2Temp > setTemp2 - heatActvThresh) {
-      if (turnOffHeater(HEATER2RELAY)) {
-        Serial.println("[HEATER 2 POWER]: OFF");
-        sendStatusMessage(STATUS_H2_OFF);
-        heater2IsOn = false;
-      }
-    }
-
-    turnOnLED(HEATER2LED);
-  } else {
-    heater2IsOn = false;
-
-    if (turnOffHeater(HEATER2RELAY)) {
-      Serial.println("[HEATER 2 POWER]: OFF");
-      sendStatusMessage(STATUS_H2_OFF);
-    }
-
-    turnOffLED(HEATER2LED);
-  }
-
-  // protection against over heating the heater
+  
   if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
+    // protection against over heating the heater
     turnOffHeater(HEATER1RELAY);
     turnOffHeater(HEATER2RELAY);
 
     Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
     sendStatusMessage(STATUS_MAX_TEMP);
+  } else {
+    // heater hasnt exceded max temp
+    if (heater1SwitchIsOn) {
+      if (probe1Temp < setTemp1 + heatActvThresh) {
+        if (turnOnHeater(HEATER1RELAY)) {
+          Serial.println("[HEATER 1 POWER]: ON");
+          sendStatusMessage(STATUS_H1_ON);
+          heater1IsOn = true;
+        }
+      } else if (probe1Temp > setTemp1 - heatActvThresh) {
+        if (turnOffHeater(HEATER1RELAY)) {
+          Serial.println("[HEATER 1 POWER]: OFF");
+          sendStatusMessage(STATUS_H1_OFF);
+          heater1IsOn = false;
+        }
+      }
+
+      turnOnLED(HEATER1LED);
+    } else {
+      heater1IsOn = false;
+
+      if (turnOffHeater(HEATER1RELAY)) {
+        Serial.println("[HEATER 1 POWER]: OFF");
+        sendStatusMessage(STATUS_H1_OFF);
+      }
+
+      turnOffLED(HEATER1LED);
+    }
+
+
+    if (heater2SwitchIsOn) {
+      if (probe2Temp < setTemp2 + heatActvThresh) {
+        if (turnOnHeater(HEATER2RELAY)) {
+          Serial.println("[HEATER 2 POWER]: ON");
+          sendStatusMessage(STATUS_H2_ON);
+          heater2IsOn = true;
+        }
+      } else if (probe2Temp > setTemp2 - heatActvThresh) {
+        if (turnOffHeater(HEATER2RELAY)) {
+          Serial.println("[HEATER 2 POWER]: OFF");
+          sendStatusMessage(STATUS_H2_OFF);
+          heater2IsOn = false;
+        }
+      }
+
+      turnOnLED(HEATER2LED);
+    } else {
+      heater2IsOn = false;
+
+      if (turnOffHeater(HEATER2RELAY)) {
+        Serial.println("[HEATER 2 POWER]: OFF");
+        sendStatusMessage(STATUS_H2_OFF);
+      }
+
+      turnOffLED(HEATER2LED);
+    }
+    
   }
 }
 
@@ -557,7 +561,7 @@ void loop(void) {
 
     broadcastCurrTemp(5000);
   } else {
-    
+
     // Bluetooth is disconnected
     // turn off all heaters for safety
     shutOffDevice();
