@@ -114,7 +114,7 @@ int setTemp1 = 75;
 int setTemp2 = 75;
 const int heatActvThresh = 0; // Heater activation threshold (in degrees F)
 
-const int maxTemp = 120; // absolute maximum temperature the heater will ever go
+const int maxTemp = 158; // absolute maximum temperature the heater will ever go
 
 bool heater1SwitchIsOn = false;
 bool heater2SwitchIsOn = false;
@@ -442,7 +442,7 @@ void updateHeaterStatus() {
       sendStatusMessage(STATUS_H1_OFF);
     }
 
-    turnOnLED(HEATER2LED);
+    turnOffLED(HEATER1LED);
   }
 
   if (heater2SwitchIsOn) {
@@ -518,6 +518,19 @@ bool turnOffLED(uint8_t ledPin) {
   return triggerIO(false, ledPin);
 }
 
+void shutOffDevice() {
+  heater1SwitchIsOn = false;
+  heater2SwitchIsOn = false;
+  heater1IsOn = false;
+  heater2IsOn = false;
+
+  turnOffHeater(HEATER1RELAY);
+  turnOffHeater(HEATER2RELAY);
+
+  turnOffLED(HEATER1LED);
+  turnOffLED(HEATER2LED);
+}
+
 // RETURNS TRUE IF THE STATE CHANGED
 bool triggerIO(int state, uint8_t relay) {
   int currState = digitalRead(relay);
@@ -534,7 +547,7 @@ void loop(void) {
   pollThermistors(2000);
 
   if (ble.isConnected()) {
-    
+
     char* msg = pollBtMessages();
 
     // if our message is not null
@@ -544,16 +557,10 @@ void loop(void) {
 
     broadcastCurrTemp(5000);
   } else {
+    
     // Bluetooth is disconnected
     // turn off all heaters for safety
-
-    heater1SwitchIsOn = false;
-    heater2SwitchIsOn = false;
-    heater1IsOn = false;
-    heater2IsOn = false;
-    
-    turnOffHeater(HEATER1RELAY);
-    turnOffHeater(HEATER2RELAY);
+    shutOffDevice();
   }
 
   updateHeaterStatus();
