@@ -155,7 +155,6 @@ const char HEATER_OFF = '0';
 #define HEATER1LED 10
 #define HEATER2LED 9
 
-
 // A small helper
 void error(const __FlashStringHelper*err) {
   Serial.println(err);
@@ -228,7 +227,10 @@ void sendBtMessage(String msg) {
 
   // check response status
   if (! ble.waitForOK() ) {
-    Serial.println(F("Failed to send?"));
+    Serial.println(F("Failed to send? Turning heaters off for safety"));
+
+    heater1SwitchIsOn = false;
+    heater2SwitchIsOn = false;
   }
 }
 
@@ -541,6 +543,17 @@ void loop(void) {
     }
 
     broadcastCurrTemp(5000);
+  } else {
+    // Bluetooth is disconnected
+    // turn off all heaters for safety
+
+    heater1SwitchIsOn = false;
+    heater2SwitchIsOn = false;
+    heater1IsOn = false;
+    heater2IsOn = false;
+    
+    turnOffHeater(HEATER1RELAY);
+    turnOffHeater(HEATER2RELAY);
   }
 
   updateHeaterStatus();
