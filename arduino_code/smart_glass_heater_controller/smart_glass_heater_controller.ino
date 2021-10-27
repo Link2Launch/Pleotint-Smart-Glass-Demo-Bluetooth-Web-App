@@ -419,7 +419,6 @@ float pollThermistor(uint8_t thermPin) {
 }
 
 void updateHeaterStatus() {
-
   if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
     // protection against over heating the heater
     turnOffHeater(HEATER1RELAY);
@@ -428,12 +427,12 @@ void updateHeaterStatus() {
     Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
     sendStatusMessage(STATUS_MAX_TEMP);
   } else {
-    // heater hasnt exceded max temp
-    updateHeaterStates();
+    // the heater hasn't exceded max temp
+    updateHeaterStatus__standardOpertation();
   }
 }
 
-void updateHeaterStates() {
+void updateHeaterStatus__standardOpertation() {
   // check for heater number 1 (Thigh)
   if (heater1SwitchIsOn) {
     if (probe1Temp < setTemp1 + heatActvThresh) {
