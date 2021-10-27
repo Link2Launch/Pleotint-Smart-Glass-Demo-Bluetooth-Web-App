@@ -81,11 +81,11 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 
 /*********************************************/
-// THERMISTOR CODE
+/**************THERMISTOR CODE****************/
 
 // which analog pin to connect
-#define THERMISTOR1PIN A1
-#define THERMISTOR2PIN A2
+#define THERMISTOR1PIN A1 //Thigh
+#define THERMISTOR2PIN A2 //Foot
 // resistance at 25 degrees C
 #define THERMISTORNOMINAL 10000
 // temp. for nominal resistance (almost always 25 C)
@@ -101,8 +101,6 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 int samples[NUMSAMPLES];
 
 long timeSinceLastTempPoll;
-
-
 /**********************************************/
 
 
@@ -116,10 +114,10 @@ const int heatActvThresh = 0; // Heater activation threshold (in degrees F)
 
 const int maxTemp = 135; // absolute maximum temperature the heater will ever go
 
-bool heater1SwitchIsOn = false;
-bool heater2SwitchIsOn = false;
-bool heater1IsOn = false;
-bool heater2IsOn = false;
+bool heater1SwitchIsOn = false; //Thigh
+bool heater2SwitchIsOn = false; //Foot
+bool heater1IsOn = false; //Thigh
+bool heater2IsOn = false; //Foot
 
 // codes for sending messsages
 const char STATUS_CODE = 's';
@@ -149,11 +147,11 @@ const char HEATER_OFF = '0';
 
 
 // Relay pins for the heaters
-#define HEATER1RELAY 13
-#define HEATER2RELAY 12
+#define HEATER1RELAY 13 //Thigh
+#define HEATER2RELAY 12 //Foot
 
-#define HEATER1LED 10
-#define HEATER2LED 9
+#define HEATER1LED 10 //Thigh
+#define HEATER2LED 9  //Foot
 
 // A small helper
 void error(const __FlashStringHelper*err) {
@@ -429,10 +427,10 @@ void updateHeaterStatus() {
   } else {
     // heater hasnt exceded max temp
 
-    // check for heater number 1
+    // check for heater number 1 (Thigh)
     if (heater1SwitchIsOn) {
       if (probe1Temp < setTemp1 + heatActvThresh) {
-        // if heater switch is on and we haven't exceeded the set temp
+        // if heater switch is on and we haven't exceeded the set temp by the set threshold
         if (turnOnHeater(HEATER1RELAY)) {
           Serial.println("[HEATER 1 POWER]: ON");
           sendStatusMessage(STATUS_H1_ON);
@@ -458,10 +456,10 @@ void updateHeaterStatus() {
       turnOffLED(HEATER1LED);
     }
 
-    // check for heater number 2
+    // check for heater number 2 (Foot)
     if (heater2SwitchIsOn) {
       if (probe2Temp < setTemp2 + heatActvThresh) {
-        // if heater switch is on and we haven't exceeded the set temp
+        // if heater switch is on and we haven't exceeded the set temp by the set threshold
         if (turnOnHeater(HEATER2RELAY)) {
           Serial.println("[HEATER 2 POWER]: ON");
           sendStatusMessage(STATUS_H2_ON);
