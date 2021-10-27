@@ -213,6 +213,9 @@ void setup(void) {
 
   pinMode(HEATER1RELAY, OUTPUT);
   pinMode(HEATER2RELAY, OUTPUT);
+
+  pinMode(HEATER1LED, OUTPUT);
+  pinMode(HEATER2LED, OUTPUT);
 }
 
 
