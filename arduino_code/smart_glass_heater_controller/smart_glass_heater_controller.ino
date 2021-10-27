@@ -429,14 +429,12 @@ void updateHeaterStatus() {
     sendStatusMessage(STATUS_MAX_TEMP);
   } else {
     // heater hasnt exceded max temp
-
-    // check for heater number 1 (Thigh)
-
     updateHeaterStates();
   }
 }
 
 void updateHeaterStates() {
+  // check for heater number 1 (Thigh)
   if (heater1SwitchIsOn) {
     if (probe1Temp < setTemp1 + heatActvThresh) {
       // if heater switch is on and we haven't exceeded the set temp by the set threshold
