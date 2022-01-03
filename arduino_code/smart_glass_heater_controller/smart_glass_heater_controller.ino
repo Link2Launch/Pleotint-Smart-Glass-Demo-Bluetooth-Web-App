@@ -219,6 +219,28 @@ void setup(void) {
   pinMode(HEATER2LED, OUTPUT);
 }
 
+void loop(void) {
+  pollThermistors(2000);
+
+  if (ble.isConnected()) {
+
+    char* msg = pollBtMessages();
+
+    // if our message is not null
+    if (strcmp(msg, "") != 0) {
+      parseMessage(msg);
+    }
+
+    broadcastCurrTemp(5000);
+  } else {
+
+    // Bluetooth is disconnected
+    // turn off all heaters for safety
+    shutOffDevice();
+  }
+
+  updateHeaterStatus();
+}
 
 void sendBtMessage(String msg) {
   Serial.print("[Send]: ");
@@ -443,7 +465,7 @@ void updateHeaterStatus__standardOpertation() {
         sendStatusMessage(STATUS_H1_ON);
         heater1IsOn = true;
       }
-    } else if (probe1Temp > setTemp1 - heatActvThresh) {
+    } else if (probe1Temp >= setTemp1 - heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
         sendStatusMessage(STATUS_H1_OFF);
@@ -472,7 +494,7 @@ void updateHeaterStatus__standardOpertation() {
         sendStatusMessage(STATUS_H2_ON);
         heater2IsOn = true;
       }
-    } else if (probe2Temp > setTemp2 - heatActvThresh) {
+    } else if (probe2Temp >= setTemp2 - heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
         sendStatusMessage(STATUS_H2_OFF);
@@ -552,27 +574,4 @@ bool triggerIO(int state, uint8_t relay) {
     digitalWrite(relay, state);
     return true;
   }
-}
-
-void loop(void) {
-  pollThermistors(2000);
-
-  if (ble.isConnected()) {
-
-    char* msg = pollBtMessages();
-
-    // if our message is not null
-    if (strcmp(msg, "") != 0) {
-      parseMessage(msg);
-    }
-
-    broadcastCurrTemp(5000);
-  } else {
-
-    // Bluetooth is disconnected
-    // turn off all heaters for safety
-    shutOffDevice();
-  }
-
-  updateHeaterStatus();
 }
