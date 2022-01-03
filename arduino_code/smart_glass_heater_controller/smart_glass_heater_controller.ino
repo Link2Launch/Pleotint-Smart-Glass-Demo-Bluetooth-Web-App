@@ -156,6 +156,7 @@ const char HEATER_OFF = '0';
 // A small helper
 void error(const __FlashStringHelper*err) {
   Serial.println(err);
+  shutOffDevice();
   while (1);
 }
 
