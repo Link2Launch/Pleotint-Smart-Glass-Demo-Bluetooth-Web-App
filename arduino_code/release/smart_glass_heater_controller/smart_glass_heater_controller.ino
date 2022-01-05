@@ -110,7 +110,7 @@ int probe1Temp;
 int probe2Temp;
 int setTemp1 = 75;
 int setTemp2 = 75;
-const int heatActvThresh = 0; // Heater activation threshold (in degrees F)
+const int heatActvThresh = 1; // Heater activation threshold (in degrees F)
 
 const int maxTemp = 135; // absolute maximum temperature the heater will ever go
 
@@ -394,6 +394,11 @@ void pollThermistors(long interval) {
     probe2Temp = pollThermistor(THERMISTOR2PIN);
 
     timeSinceLastTempPoll = millis();
+
+//    Serial.print("[HEATER SWITCH 1]: ");
+//    Serial.println(heater1SwitchIsOn);
+//    Serial.print("[HEATER SWITCH 2]: ");
+//    Serial.println(heater2SwitchIsOn);
   }
 }
 
