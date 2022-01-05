@@ -219,11 +219,13 @@ void setup(void) {
   pinMode(HEATER2LED, OUTPUT);
 }
 
+//
+// MAIN LOGIC LOOP FOR BLUETOOTH HEATHER CONTROLLER
+//
 void loop(void) {
   pollThermistors(2000);
 
   if (ble.isConnected()) {
-
     char* msg = pollBtMessages();
 
     // if our message is not null
@@ -233,28 +235,27 @@ void loop(void) {
 
     broadcastCurrTemp(5000);
   } else {
-
     // Bluetooth is disconnected
     // turn off all heaters for safety
-    shutOffDevice();
+//    shutOffDevice();
   }
 
   updateHeaterStatus();
 }
 
-void sendBtMessage(String msg) {
+bool sendBtMessage(String msg) {
   Serial.print("[Send]: ");
   Serial.println(msg);
 
   ble.print("AT+BLEUARTTX=");
   ble.println(msg);
-
+  
   // check response status
   if (! ble.waitForOK() ) {
-    Serial.println(F("Failed to send? Turning heaters off for safety"));
-
-    heater1SwitchIsOn = false;
-    heater2SwitchIsOn = false;
+    Serial.println("[Failed to send bluetooth message]: " + msg);
+    return false;
+  } else {
+    return true;
   }
 }
 
@@ -551,6 +552,19 @@ bool turnOffLED(uint8_t ledPin) {
   return triggerIO(false, ledPin);
 }
 
+// RETURNS TRUE IF THE STATE CHANGED
+bool triggerIO(int state, uint8_t relay) {
+  int currState = digitalRead(relay);
+
+  if (currState == state) {
+    return false;
+  } else {
+    digitalWrite(relay, state);
+    return true;
+  }
+}
+
+// SHUT OFF DEVICE
 void shutOffDevice() {
   heater1SwitchIsOn = false;
   heater2SwitchIsOn = false;
@@ -562,16 +576,4 @@ void shutOffDevice() {
 
   turnOffLED(HEATER1LED);
   turnOffLED(HEATER2LED);
-}
-
-// RETURNS TRUE IF THE STATE CHANGED
-bool triggerIO(int state, uint8_t relay) {
-  int currState = digitalRead(relay);
-
-  if (currState == state) {
-    return false;
-  } else {
-    digitalWrite(relay, state);
-    return true;
-  }
 }
