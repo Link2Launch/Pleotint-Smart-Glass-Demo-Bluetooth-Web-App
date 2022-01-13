@@ -158,7 +158,7 @@ const char HEATER_OFF = '0';
 #define POWERLED 6      // Green power status LED 
 #define BLUETOOTHLED 5  // Blue Bluetooth status LED
 
-#define PROXSEN 6 //proximity sensor
+#define PROXSEN 11 //proximity sensor
 
 // A small helper
 void error(const __FlashStringHelper*err) {
