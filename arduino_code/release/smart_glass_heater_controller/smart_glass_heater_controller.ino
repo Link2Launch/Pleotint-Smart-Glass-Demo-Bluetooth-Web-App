@@ -477,7 +477,7 @@ bool pollProximitySensor(long interval) {
     timeSinceLastProxPoll = millis();
 
     if (proxIsSeen) {
-      Serial.println("[PROXIMITY]: Body deetected");
+      Serial.println("[PROXIMITY]: Body detected");
     } else {
       Serial.println("[PROXIMITY]: Nobody detected.");  
     }
@@ -488,10 +488,14 @@ void updateHeaterStatus() {
 	   //check to see if the proximity sensor isnt activated, and if so, turns off
   //  both heaters and ends the function
   if (!proxIsSeen) {
-    turnOffHeater(HEATER1RELAY);
-	  turnOffLED(HEATER1LED);
-	  turnOffHeater(HEATER2RELAY);
-    turnOffLED(HEATER2LED);
+    if (turnOffHeater(HEATER1RELAY)) {
+      turnOffLED(HEATER1LED);
+      sendStatusMessage(STATUS_H1_OFF);
+    }
+    if (turnOffHeater(HEATER2RELAY)) {
+      turnOffLED(HEATER2LED); 
+      sendStatusMessage(STATUS_H2_OFF);
+    }
   } else { //if a person is destected, continue as normal
 	  if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
 		// protection against over heating the heater
@@ -501,8 +505,8 @@ void updateHeaterStatus() {
 		Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
 		sendStatusMessage(STATUS_MAX_TEMP);
 	  } else {
-		// the heater hasn't exceded max temp
-		updateHeaterStatus__standardOpertation();
+		  // the heater hasn't exceded max temp
+		  updateHeaterStatus__standardOpertation();
 	  }
   }
 }
@@ -515,27 +519,26 @@ void updateHeaterStatus__standardOpertation() {
       // if heater switch is on and we haven't exceeded the set temp by the set threshold
       if (turnOnHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: ON");
+        turnOnLED(HEATER1LED);
         sendStatusMessage(STATUS_H1_ON);
         heater1IsOn = true;
       }
     } else if (probe1Temp >= setTemp1 - heatActvThresh) {
       if (turnOffHeater(HEATER1RELAY)) {
         Serial.println("[HEATER 1 POWER]: OFF");
+        turnOffLED(HEATER1LED);
         sendStatusMessage(STATUS_H1_OFF);
         heater1IsOn = false;
       }
     }
-
-    turnOnLED(HEATER1LED);
   } else {
     heater1IsOn = false;
 
     if (turnOffHeater(HEATER1RELAY)) {
       Serial.println("[HEATER 1 POWER]: OFF");
+      turnOffLED(HEATER1LED);
       sendStatusMessage(STATUS_H1_OFF);
     }
-
-    turnOffLED(HEATER1LED);
   }
 
   // check for heater number 2 (Foot)
@@ -544,27 +547,27 @@ void updateHeaterStatus__standardOpertation() {
       // if heater switch is on and we haven't exceeded the set temp by the set threshold
       if (turnOnHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: ON");
+        turnOnLED(HEATER2LED);
         sendStatusMessage(STATUS_H2_ON);
         heater2IsOn = true;
       }
     } else if (probe2Temp >= setTemp2 - heatActvThresh) {
       if (turnOffHeater(HEATER2RELAY)) {
         Serial.println("[HEATER 2 POWER]: OFF");
+        turnOffLED(HEATER2LED);
         sendStatusMessage(STATUS_H2_OFF);
         heater2IsOn = false;
       }
     }
 
-    turnOnLED(HEATER2LED);
   } else {
     heater2IsOn = false;
 
     if (turnOffHeater(HEATER2RELAY)) {
       Serial.println("[HEATER 2 POWER]: OFF");
+      turnOffLED(HEATER2LED);
       sendStatusMessage(STATUS_H2_OFF);
     }
-
-    turnOffLED(HEATER2LED);
   }
 }
 
