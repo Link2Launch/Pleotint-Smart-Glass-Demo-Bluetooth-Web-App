@@ -105,6 +105,7 @@ long timeSinceLastTempPoll;
 
 
 long timeSinceLastBroadcast;
+long timeSinceLastProxPoll;
 
 int probe1Temp;
 int probe2Temp;
@@ -119,6 +120,7 @@ bool heater2SwitchIsOn = false; //Foot
 bool heater1IsOn = false; //Thigh
 bool heater2IsOn = false; //Foot
 bool proxIsSeen = false; // proximity sensor
+bool bluetoothIsConnected = false;
 
 // codes for sending messsages
 const char STATUS_CODE = 's';
@@ -151,8 +153,10 @@ const char HEATER_OFF = '0';
 #define HEATER1RELAY 13 //Thigh
 #define HEATER2RELAY 12 //Foot
 
-#define HEATER1LED 10 //Thigh
-#define HEATER2LED 9  //Foot
+#define HEATER1LED 10   // Red Thigh heater status LED
+#define HEATER2LED 9    // Red Foot heater status LED
+#define POWERLED 6      // Green power status LED 
+#define BLUETOOTHLED 5  // Blue Bluetooth status LED
 
 #define PROXSEN 6 //proximity sensor
 
@@ -220,6 +224,11 @@ void setup(void) {
 
   pinMode(HEATER1LED, OUTPUT);
   pinMode(HEATER2LED, OUTPUT);
+
+  pinMode(POWERLED, OUTPUT);
+  pinMode(BLUETOOTHLED, OUTPUT);
+
+  turnOnLED(POWERLED);
 }
 
 //
@@ -227,6 +236,7 @@ void setup(void) {
 //
 void loop(void) {
   pollThermistors(2000);
+  pollProximitySensor(5000);
 
   if (ble.isConnected()) {
     char* msg = pollBtMessages();
@@ -237,15 +247,23 @@ void loop(void) {
     }
 
     broadcastCurrTemp(5000);
+
+    if (!bluetoothIsConnected) {
+      bluetoothIsConnected = true;
+      turnOnLED(BLUETOOTHLED);
+    }
   } else {
     // Bluetooth is disconnected
     // turn off all heaters for safety
-//    shutOffDevice();
+    shutOffDevice();
+    
+    if (bluetoothIsConnected) {
+      bluetoothIsConnected = false;
+      turnOffLED(BLUETOOTHLED);
+    }
   }
 
   updateHeaterStatus();
-
-
 }
 
 bool sendBtMessage(String msg) {
@@ -452,15 +470,29 @@ float pollThermistor(uint8_t thermPin) {
   return fahrenheit;
 }
 
+bool pollProximitySensor(long interval) {
+  if (millis() - timeSinceLastProxPoll > interval) {
+    proxIsSeen = !digitalRead(PROXSEN);
+
+    timeSinceLastProxPoll = millis();
+
+    if (proxIsSeen) {
+      Serial.println("[PROXIMITY]: Body deetected");
+    } else {
+      Serial.println("[PROXIMITY]: Nobody detected.");  
+    }
+  }
+}
+
 void updateHeaterStatus() {
 	   //check to see if the proximity sensor isnt activated, and if so, turns off
   //  both heaters and ends the function
-  if(digitalRead(PROXSEN)){
+  if (!proxIsSeen) {
     turnOffHeater(HEATER1RELAY);
-	turnOffHeater(HEATER2RELAY);
-    Serial.println("Nobody detected.");
-
-  }else{ //if a person is destected, continue as normal
+	  turnOffLED(HEATER1LED);
+	  turnOffHeater(HEATER2RELAY);
+    turnOffLED(HEATER2LED);
+  } else { //if a person is destected, continue as normal
 	  if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
 		// protection against over heating the heater
 		turnOffHeater(HEATER1RELAY);
