@@ -154,7 +154,7 @@ const char HEATER_OFF = '0';
 #define HEATER1LED 10 //Thigh
 #define HEATER2LED 9  //Foot
 
-#definte PROXSEN 6 //proximity sensor
+#define PROXSEN 6 //proximity sensor
 
 // A small helper
 void error(const __FlashStringHelper*err) {
@@ -244,6 +244,8 @@ void loop(void) {
   }
 
   updateHeaterStatus();
+
+
 }
 
 bool sendBtMessage(String msg) {
@@ -451,29 +453,30 @@ float pollThermistor(uint8_t thermPin) {
 }
 
 void updateHeaterStatus() {
-  if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
-    // protection against over heating the heater
+	   //check to see if the proximity sensor isnt activated, and if so, turns off
+  //  both heaters and ends the function
+  if(digitalRead(PROXSEN)){
     turnOffHeater(HEATER1RELAY);
-    turnOffHeater(HEATER2RELAY);
+	turnOffHeater(HEATER2RELAY);
+    Serial.println("Nobody detected.");
 
-    Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
-    sendStatusMessage(STATUS_MAX_TEMP);
-  } else {
-    // the heater hasn't exceded max temp
-    updateHeaterStatus__standardOpertation();
+  }else{ //if a person is destected, continue as normal
+	  if (probe1Temp >= maxTemp || probe2Temp >= maxTemp) {
+		// protection against over heating the heater
+		turnOffHeater(HEATER1RELAY);
+		turnOffHeater(HEATER2RELAY);
+
+		Serial.println("[HEATER POWER]: OFF FOR SAFETY - EXCEEDED MAX TEMP");
+		sendStatusMessage(STATUS_MAX_TEMP);
+	  } else {
+		// the heater hasn't exceded max temp
+		updateHeaterStatus__standardOpertation();
+	  }
   }
 }
 
 void updateHeaterStatus__standardOpertation() {
-  //check to see if the proximity sensor isnt activated, and if so, turns off
-  //  both heaters and ends the function
-  if(!digitalRead(PROXSEN)){
-		turnOffHeater(HEATER1RELAY);
-		turnOffHeater(HEATER2RELAY);
-		return 0; 
-	}
-	
-	
+ 
   // check for heater number 1 (Thigh)
   if (heater1SwitchIsOn) {
     if (probe1Temp < setTemp1 + heatActvThresh) {
