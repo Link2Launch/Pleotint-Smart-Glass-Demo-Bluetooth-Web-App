@@ -118,6 +118,7 @@ bool heater1SwitchIsOn = false; //Thigh
 bool heater2SwitchIsOn = false; //Foot
 bool heater1IsOn = false; //Thigh
 bool heater2IsOn = false; //Foot
+bool proxIsSeen = false; // proximity sensor
 
 // codes for sending messsages
 const char STATUS_CODE = 's';
@@ -152,6 +153,8 @@ const char HEATER_OFF = '0';
 
 #define HEATER1LED 10 //Thigh
 #define HEATER2LED 9  //Foot
+
+#definte PROXSEN 6 //proximity sensor
 
 // A small helper
 void error(const __FlashStringHelper*err) {
@@ -462,6 +465,15 @@ void updateHeaterStatus() {
 }
 
 void updateHeaterStatus__standardOpertation() {
+  //check to see if the proximity sensor isnt activated, and if so, turns off
+  //  both heaters and ends the function
+  if(!digitalRead(PROXSEN)){
+		turnOffHeater(HEATER1RELAY);
+		turnOffHeater(HEATER2RELAY);
+		return 0; 
+	}
+	
+	
   // check for heater number 1 (Thigh)
   if (heater1SwitchIsOn) {
     if (probe1Temp < setTemp1 + heatActvThresh) {
